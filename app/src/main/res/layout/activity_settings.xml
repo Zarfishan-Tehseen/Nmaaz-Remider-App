@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
+
+        <View
+            android:id="@+id/settingsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:background="@drawable/bg_header_gradient" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-100dp"
+            android:layout_marginStart="24dp"
+            android:text="Settings"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="4dp"
+            android:text="Customize your prayer experience"
+            android:textColor="#E0F2F1"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/SettingsLabel"
+            android:layout_marginTop="50dp"
+            android:text="Calculation Method" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/SettingsCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include android:id="@+id/methodKarachi" layout="@layout/item_settings_row" />
+                <View style="@style/Divider" />
+                <include android:id="@+id/methodMWL" layout="@layout/item_settings_row" />
+                <View style="@style/Divider" />
+                <include android:id="@+id/methodNorthAmerica" layout="@layout/item_settings_row" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/SettingsLabel"
+            android:text="Asr Juristic Method" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/SettingsCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include android:id="@+id/itemHanafi" layout="@layout/item_settings_row" />
+                <View style="@style/Divider" />
+                <include android:id="@+id/itemShafi" layout="@layout/item_settings_row" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>
