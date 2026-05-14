@@ -125,16 +125,17 @@
                         android:text="Notification"
                         android:textSize="16sp" />
                     <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/notificationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:checked="true"
-                        app:thumbTint="@color/green"
-                        app:trackTint="@color/light_green"/>
+                        app:thumbTint="@color/switch_thumb_selector"
+                        app:trackTint="@color/switch_track_selector"
+                        app:useMaterialThemeColors="false"
+                        android:checked="true" />
                 </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
-            <!--            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" />-->
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -158,14 +159,22 @@
                         android:layout_marginStart="16dp"
                         android:text="Sound"
                         android:textSize="16sp" />
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/layoutSound"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="Adhan"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:textColor="#00B894" />
+                        android:layout_alignParentEnd="true">
+                        <TextView
+                            android:id="@+id/tvSoundValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="Adhan"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="#00B894" />
+                    </LinearLayout>
+
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
@@ -193,16 +202,23 @@
                         android:layout_marginTop="10dp"
                         android:text="Reminder offset"
                         android:textSize="16sp" />
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/layoutOffset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginTop="10dp"
-                        android:text="5 min before"
-                        android:background="#F1F2F6"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:textColor="#2D3436" />
+                        android:layout_marginTop="10dp">
+                        <TextView
+                            android:id="@+id/tvOffsetValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5 min before"
+                            android:background="#F1F2F6"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="#2D3436" />
+                    </LinearLayout>
+
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 

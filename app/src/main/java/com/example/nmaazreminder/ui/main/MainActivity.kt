@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // Updated to match your Adapter's constructor
         prayerAdapter = PrayerAdapter { prayerItem ->
             // This code runs when the card OR the bell is clicked
             val intent = Intent(this, PrayerDetailActivity::class.java).apply {
@@ -99,8 +98,8 @@ class MainActivity : AppCompatActivity() {
 
             val prayerList = listOf(
                 PrayerItem("Fajr", sdf.format(times.fajr)),
-                PrayerItem("Zuhr", sdf.format(times.dhuhr)),
-                PrayerItem("Asr", sdf.format(times.asr)),
+                PrayerItem("Dhuhr", sdf.format(times.dhuhr)),
+                PrayerItem("Asar", sdf.format(times.asr)),
                 PrayerItem("Maghrib", sdf.format(times.maghrib)),
                 PrayerItem("Isha", sdf.format(times.isha))
             )

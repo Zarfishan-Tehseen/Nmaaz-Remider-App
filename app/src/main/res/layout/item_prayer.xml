@@ -12,7 +12,6 @@
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,20 +30,21 @@
             android:id="@+id/tvPrayerTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvPrayerName"
             android:layout_marginTop="4dp"
             android:text="00:00 AM"
             android:textColor="@color/time_color"
-            android:textSize="14sp" />
-
-        <ImageButton
-            android:id="@+id/btnNotif"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:textSize="14sp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/bg_notif_btn"
-            android:src="@drawable/ic_bell"
-            android:scaleType="center"/>
+            android:layout_centerVertical="true"/>
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/btnNotif"-->
+<!--            android:layout_width="32dp"-->
+<!--            android:layout_height="32dp"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:background="@drawable/bg_notif_btn"-->
+<!--            android:src="@drawable/ic_bell"-->
+<!--            android:scaleType="center"/>-->
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

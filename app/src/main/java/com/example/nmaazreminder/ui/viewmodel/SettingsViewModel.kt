@@ -16,7 +16,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val settingsState = repository.streamPrayerSettings()
-        .stateIn(
+        .stateIn( //remembers last saved value
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null

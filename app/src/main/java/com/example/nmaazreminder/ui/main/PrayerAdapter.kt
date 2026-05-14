@@ -20,11 +20,11 @@ class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
                 onNotificationClick(item)
             }
 
-            binding.btnNotif.setOnClickListener {
-                // You can add separate logic here later if needed
-                // For now, it will trigger the same navigation logic
-                onNotificationClick(item)
-            }
+//            binding.btnNotif.setOnClickListener {
+//                // You can add separate logic here later if needed
+//                // For now, it will trigger the same navigation logic
+//                onNotificationClick(item)
+//            }
         }
     }
 
