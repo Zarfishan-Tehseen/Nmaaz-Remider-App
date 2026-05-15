@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "prayer_notifications")
 data class PrayerNotification(
-    @PrimaryKey val prayerName: String, // "Fajr", "Zuhr", etc.
+    @PrimaryKey val prayerName: String,
     val isEnabled: Boolean = true,
     val soundName: String = "Adhan",
-    val reminderOffset: Int = 5 // minutes
+    val reminderOffset: Int = 5
 )

@@ -35,4 +35,13 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">#F1F2F6</item>
     </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+            <item name="windowSplashScreenBackground">@color/green</item>
+
+            <item name="windowSplashScreenAnimatedIcon">@drawable/ic_mosque32</item>
+
+            <item name="postSplashScreenTheme">@style/Theme.NmaazReminder</item>
+    </style>
+
 </resources>

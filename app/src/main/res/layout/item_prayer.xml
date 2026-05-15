@@ -9,6 +9,7 @@
     app:cardElevation="2dp"
     app:strokeColor="@color/stroke_color"
     app:strokeWidth="1dp"
+    app:cardBackgroundColor="@color/pheeka_green"
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
@@ -33,7 +34,7 @@
             android:layout_marginTop="4dp"
             android:text="00:00 AM"
             android:textColor="@color/time_color"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"/>
 

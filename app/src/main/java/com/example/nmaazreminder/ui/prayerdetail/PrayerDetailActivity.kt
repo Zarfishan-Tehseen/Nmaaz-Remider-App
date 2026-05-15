@@ -42,8 +42,6 @@ class PrayerDetailActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.settings.collect { data ->
                     data?.let {
-                        // Check your XML ID here. It might be binding.switch1 or similar
-                        // based on your previous XML snippet
                         binding.notificationSwitch.isChecked = it.isEnabled
 
                         binding.tvSoundValue.text = it.soundName
@@ -65,8 +63,8 @@ class PrayerDetailActivity : AppCompatActivity() {
     private fun setupDynamicLabels(name: String) {
         binding.tvPrayerSubtitle.text = when (name) {
             "Fajr" -> "Dawn Prayer"
-            "Zuhr" -> "Noon Prayer"
-            "Asr" -> "Afternoon Prayer"
+            "Dhuhr" -> "Noon Prayer"
+            "Asar" -> "Afternoon Prayer"
             "Maghrib" -> "Sunset Prayer"
             "Isha" -> "Night Prayer"
             else -> "Daily Prayer"
@@ -81,14 +79,13 @@ class PrayerDetailActivity : AppCompatActivity() {
             .setItems(sounds) { _, which ->
                 val selectedSound = sounds[which]
                 viewModel.updateSound(selectedSound)
-                // The UI will update automatically because we are observing the Flow
             }
             .show()
     }
 
     private fun showOffsetPicker() {
         val options = arrayOf("At time", "5 min before", "10 min before", "15 min before")
-        val values = intArrayOf(0, 5, 10, 15) // Minutes to save in DB
+        val values = intArrayOf(0, 5, 10, 15)
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Select Reminder Offset")

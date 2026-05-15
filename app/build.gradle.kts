@@ -84,4 +84,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
 
     implementation("com.google.android.gms:play-services-location:21.1.0")
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 }

@@ -21,7 +21,7 @@ class PrayerDetailViewModel @Inject constructor(
     // 2. We use flatMapLatest to switch the database observer whenever the prayer name changes
     @OptIn(ExperimentalCoroutinesApi::class)
     val settings: StateFlow<PrayerNotification?> = _prayerName
-        .filterNotNull()
+        .filterNotNull() // agr name mai null hai to database ko nah dekho
         .flatMapLatest { name ->
             repository.getNotificationSetting(name) // This calls your Flow-based repository function
         }

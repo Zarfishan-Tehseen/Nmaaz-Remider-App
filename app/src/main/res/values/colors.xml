@@ -4,6 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0A5C44</color>
     <color name="stroke_color">#E0E0E0</color>
-    <color name="time_color">#636E72</color>
+    <color name="time_color">#00695C</color>
     <color name="light_green">#84b2a4</color>
+    <color name="subtle_green">#cbeacd</color>
+    <color name="pheeka_green">#F1FBF5</color>
 </resources>

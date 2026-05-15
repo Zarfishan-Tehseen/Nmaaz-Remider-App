@@ -2,6 +2,7 @@ package com.example.nmaazreminder.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nmaazreminder.data.alarm.PrayerAlarmScheduler
 import com.example.nmaazreminder.data.local.PrayerNotification
 import com.example.nmaazreminder.data.local.PrayerSettings
 import com.example.nmaazreminder.data.repository.PrayerRepository
@@ -20,13 +21,17 @@ import kotlinx.coroutines.flow.firstOrNull
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: PrayerRepository,
-    private val getPrayerTimesUseCase: GetPrayerTimesUseCase
+    private val getPrayerTimesUseCase: GetPrayerTimesUseCase,
+    private val alarmScheduler: PrayerAlarmScheduler
 ) : ViewModel() {
 
     // Database Flow into a UI State Flow
     val prayerState = repository.streamPrayerSettings().map { settings ->
         if (settings != null) {
-            getPrayerTimesUseCase.execute(settings)
+            val times = getPrayerTimesUseCase.execute(settings)
+            alarmScheduler.scheduleAlarms(times)
+
+            times
         } else {
             null
         }
