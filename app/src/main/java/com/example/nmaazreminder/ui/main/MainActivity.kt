@@ -18,11 +18,17 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.location.Geocoder
+import android.os.Build
+import android.provider.Settings
 import com.google.android.gms.location.LocationServices
 import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.Toast
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.nmaazreminder.data.receiver.PrayerAlarmReceiver
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -31,13 +37,25 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var prayerAdapter: PrayerAdapter
 
-    private val locationPermissionRequest = registerForActivityResult(
+    private val permissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        when {
-            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> getUserLocation()
-            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> getUserLocation()
-            else -> Toast.makeText(this, "Location denied. Using default.", Toast.LENGTH_SHORT).show()
+        val fineLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)
+        val coarseLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false)
+        val notificationsGranted = permissions.getOrDefault(Manifest.permission.POST_NOTIFICATIONS, false)
+
+        // Handle Location response
+        if (fineLocationGranted || coarseLocationGranted) {
+            getUserLocation()
+        } else {
+            Toast.makeText(this, "Location denied. Using default.", Toast.LENGTH_SHORT).show()
+        }
+
+        // Handle Notification response
+        if (notificationsGranted) {
+            Toast.makeText(this, "Notifications enabled!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Alerts disabled. You might miss prayer alarms.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -58,10 +76,21 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        locationPermissionRequest.launch(arrayOf(
+        permissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.POST_NOTIFICATIONS
         ))
+
+        //scheduleTestAlarm()
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                // This opens the system settings page where the user MUST flip a switch for your app
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                startActivity(intent)
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -147,5 +176,28 @@ class MainActivity : AppCompatActivity() {
                 "$city, $country"
             } else "Sargodha, Pakistan"
         } catch (e: Exception) { "Sargodha, Pakistan" }
+    }
+
+    fun scheduleTestAlarm() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, PrayerAlarmReceiver::class.java).apply {
+            putExtra("PRAYER_NAME", "Test Prayer")
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            999, // unique test ID
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Trigger exactly 10 seconds (10000 ms) from right now
+        val triggerTime = System.currentTimeMillis() + 10000
+
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerTime,
+            pendingIntent
+        )
     }
 }
