@@ -1,51 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/row_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeColor="@color/stroke_color"
-    app:strokeWidth="1dp"
-    app:cardBackgroundColor="@color/pheeka_green"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:layout_height="56dp"
+        android:paddingHorizontal="16dp">
 
-        <TextView
-            android:id="@+id/tvPrayerName"
+        <ImageView
+            android:id="@+id/iv_prayer_icon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_sun_cloud_accent"
+            app:tint="#6E726E" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Prayer Name"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/iv_prayer_icon"
+            android:layout_marginStart="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_prayer_name_english"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fajr"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/tv_prayer_name_arabic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="الفجر"
+                android:textColor="#999999"
+                android:textSize="15sp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvPrayerTime"
+            android:id="@+id/tv_prayer_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="00:00 AM"
-            android:textColor="@color/time_color"
-            android:textSize="18sp"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:text="5:10 AM"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif" />
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnNotif"-->
-<!--            android:layout_width="32dp"-->
-<!--            android:layout_height="32dp"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:background="@drawable/bg_notif_btn"-->
-<!--            android:src="@drawable/ic_bell"-->
-<!--            android:scaleType="center"/>-->
     </RelativeLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/row_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="#EAE6DC" />
+
+</LinearLayout>

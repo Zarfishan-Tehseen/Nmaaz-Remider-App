@@ -8,4 +8,18 @@
     <color name="light_green">#84b2a4</color>
     <color name="subtle_green">#cbeacd</color>
     <color name="pheeka_green">#F1FBF5</color>
+
+
+    <color name="bg_main_dark">#0E3B2E</color>
+    <color name="card_bg_primary">#1B4D3E</color>
+    <color name="card_bg_secondary">#174639</color>
+
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_accent_mint">#A2E8DD</color>
+    <color name="text_muted_gray">#B0C4DE</color>
+
+    <color name="state_success">#2ECC71</color>
+    <color name="state_pending">#E74C3C</color>
+    <color name="state_inactive">#4A6B5D</color>
+
 </resources>

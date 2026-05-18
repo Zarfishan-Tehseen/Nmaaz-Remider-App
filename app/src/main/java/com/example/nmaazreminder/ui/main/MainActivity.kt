@@ -1,203 +1,65 @@
-package com.example.nmaazreminder.ui.main
+package com.example.nmaazreminder.ui.main // Matches the package root seen in your data files
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.batoulapps.adhan.PrayerTimes
+import androidx.fragment.app.Fragment
+import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.ActivityMainBinding
-import com.example.nmaazreminder.ui.viewmodel.MainViewModel
-import com.example.nmaazreminder.ui.prayerdetail.PrayerDetailActivity // General detail activity
-import com.example.nmaazreminder.ui.settings.SettingsActivity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
-import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.location.Geocoder
-import android.os.Build
-import android.provider.Settings
-import com.google.android.gms.location.LocationServices
-import androidx.activity.result.contract.ActivityResultContracts
-import android.widget.Toast
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.nmaazreminder.data.receiver.PrayerAlarmReceiver
+import com.example.nmaazreminder.ui.fragments.HomeFragment
+import com.example.nmaazreminder.ui.fragments.QiblaFragment
+import com.example.nmaazreminder.ui.fragments.TasbeehFragment
+import com.example.nmaazreminder.ui.fragments.SettingsFragment
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels()
-    private lateinit var prayerAdapter: PrayerAdapter
 
-    private val permissionRequest = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val fineLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)
-        val coarseLocationGranted = permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false)
-        val notificationsGranted = permissions.getOrDefault(Manifest.permission.POST_NOTIFICATIONS, false)
-
-        // Handle Location response
-        if (fineLocationGranted || coarseLocationGranted) {
-            getUserLocation()
-        } else {
-            Toast.makeText(this, "Location denied. Using default.", Toast.LENGTH_SHORT).show()
-        }
-
-        // Handle Notification response
-        if (notificationsGranted) {
-            Toast.makeText(this, "Notifications enabled!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Alerts disabled. You might miss prayer alarms.", Toast.LENGTH_LONG).show()
-        }
-    }
+    // Keep instances persistent in memory while the activity is alive to maintain screen state
+    private val prayersFragment by lazy { HomeFragment() }
+    private val qiblaFragment by lazy { QiblaFragment() }
+    private val tasbeehFragment by lazy { TasbeehFragment() }
+    private val settingsFragment by lazy { SettingsFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tvDate.text = viewModel.currentDateString
-
-        setupRecyclerView()
-        observePrayerData()
-
-        binding.btnSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        // Set the default landing fragment immediately when the app boots
+        if (savedInstanceState == null) {
+            switchFragment(prayersFragment)
         }
 
-        permissionRequest.launch(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.POST_NOTIFICATIONS
-        ))
-
-        //scheduleTestAlarm()
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (!alarmManager.canScheduleExactAlarms()) {
-                // This opens the system settings page where the user MUST flip a switch for your app
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                startActivity(intent)
-            }
-        }
-    }
-
-    private fun setupRecyclerView() {
-        prayerAdapter = PrayerAdapter { prayerItem ->
-            // This code runs when the card OR the bell is clicked
-            val intent = Intent(this, PrayerDetailActivity::class.java).apply {
-                putExtra("PRAYER_NAME", prayerItem.name)
-                putExtra("PRAYER_TIME", prayerItem.time)
-            }
-            startActivity(intent)
-        }
-        binding.rvPrayers.adapter = prayerAdapter
-    }
-
-    private fun observePrayerData() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.prayerState.collect { times ->
-                    if (times != null) {
-                        updateUi(times)
-                    }
+        // Set up the listener to swap fragments on menu navigation selection
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_prayers -> {
+                    switchFragment(prayersFragment)
+                    true
                 }
+                R.id.nav_qibla -> {
+                    switchFragment(qiblaFragment)
+                    true
+                }
+                R.id.nav_tasbeeh -> {
+                    switchFragment(tasbeehFragment)
+                    true
+                }
+                R.id.nav_settings -> {
+                    switchFragment(settingsFragment)
+                    true
+                }
+                else -> false
             }
         }
     }
 
-    private fun updateUi(times: PrayerTimes) {
-        val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-
-        binding.apply {
-            val next = times.nextPrayer()
-            val nextTime = times.timeForPrayer(next)
-
-            // Update Header (Next Prayer)
-            tvNextPrayerName.text = next.name
-            tvNextPrayerTime.text = if (nextTime != null) sdf.format(nextTime) else "--:--"
-
-            val prayerList = listOf(
-                PrayerItem("Fajr", sdf.format(times.fajr)),
-                PrayerItem("Dhuhr", sdf.format(times.dhuhr)),
-                PrayerItem("Asar", sdf.format(times.asr)),
-                PrayerItem("Maghrib", sdf.format(times.maghrib)),
-                PrayerItem("Isha", sdf.format(times.isha))
-            )
-
-            prayerAdapter.submitList(prayerList)
-        }
-    }
-
-    private fun getUserLocation() {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        try {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                location?.let {
-                    val lat = it.latitude
-                    val lon = it.longitude
-
-                    val cityName = getCityName(lat, lon)
-
-                    binding.tvLocation.text = cityName
-
-                    // SAVE TO ROOM DATABASE
-                    // This will now match the ViewModel function perfectly
-                    viewModel.updateLocation(cityName, lat, lon)
-                }
-                } else {
-                    // If GPS returns null, try to request a fresh update
-                    // or just keep the database's current values.
-                    Toast.makeText(this, "Unable to find location. Using last saved.", Toast.LENGTH_SHORT).show()
-                }
-            }
-            } catch (e: SecurityException) { e.printStackTrace() }
-    }
-
-    private fun getCityName(lat: Double, lon: Double): String {
-        val geocoder = Geocoder(this, Locale.getDefault())
-        return try {
-            val addresses = geocoder.getFromLocation(lat, lon, 1)
-            if (!addresses.isNullOrEmpty()) {
-                val city = addresses[0].locality ?: "Unknown City"
-                val country = addresses[0].countryName ?: ""
-                "$city, $country"
-            } else "Sargodha, Pakistan"
-        } catch (e: Exception) { "Sargodha, Pakistan" }
-    }
-
-    fun scheduleTestAlarm() {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, PrayerAlarmReceiver::class.java).apply {
-            putExtra("PRAYER_NAME", "Test Prayer")
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            999, // unique test ID
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Trigger exactly 10 seconds (10000 ms) from right now
-        val triggerTime = System.currentTimeMillis() + 10000
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
+    /**
+     * Replaces the content inside the FragmentContainerView smoothly
+     */
+    private fun switchFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }
