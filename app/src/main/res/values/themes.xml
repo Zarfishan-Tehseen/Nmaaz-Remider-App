@@ -1,11 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.NmaazReminder" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#0D3E31</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#EAE6DC</item>
+        <item name="colorOnSecondary">#2E312F</item>
+
+        <item name="colorPrimaryContainer">#D4E7E1</item>
+
+        <item name="colorOnPrimaryContainer">@color/light_green</item>
     </style>
 
-    <style name="Theme.NmaazReminder" parent="Base.Theme.NmaazReminder" />
+    <style name="Theme.NmaazReminder" parent="Base.Theme.NmaazReminder">
+
+    </style>
+
     <style name="SettingsLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -35,13 +43,14 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">#F1F2F6</item>
     </style>
+    <style name="ForceLightGreenIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#D4E7E1</item>
+    </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-            <item name="windowSplashScreenBackground">@color/green</item>
-
-            <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-
-            <item name="postSplashScreenTheme">@style/Theme.NmaazReminder</item>
+        <item name="windowSplashScreenBackground">@color/green</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.NmaazReminder</item>
     </style>
 
 </resources>

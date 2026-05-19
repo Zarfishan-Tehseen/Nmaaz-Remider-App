@@ -13,7 +13,7 @@ class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: PrayerItem, onNotificationClick: (PrayerItem) -> Unit) {
-            binding.tvPrayerName.text = item.name
+            //binding.tvPrayerName.text = item.name
             binding.tvPrayerTime.text = item.time
 
             binding.root.setOnClickListener {

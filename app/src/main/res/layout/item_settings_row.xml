@@ -1,44 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:background="?attr/selectableItemBackground">
-
-    <ImageView
-        android:id="@+id/ivRowIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_light_mode"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
+        android:id="@+id/tv_category_header"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="University of Karachi"
-        android:textColor="#2D3436"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivCheck"
-        app:layout_constraintStart_toEndOf="@id/ivRowIcon"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="#7A7E7B"
+        android:textSize="11sp"
+        android:text="Settings item"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.05"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
 
-    <ImageView
-        android:id="@+id/ivCheck"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@drawable/ic_check"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#00B894" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_row_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:id="@+id/iv_setting_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                app:tint="#0D3E31"
+                android:src="@drawable/ic_bell"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iv_setting_icon"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_setting_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#222222"
+                    android:textSize="15sp"
+                    android:text="demo"
+                    android:fontFamily="sans-serif-medium"/>
+
+                <TextView
+                    android:id="@+id/tv_setting_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#7E827F"
+                    android:text="demo sybtitle"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_chevron"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="#B5B9B6" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                app:thumbTint="@color/switch_thumb_selector"
+                app:trackTint="@color/switch_track_selector"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <View
+        android:id="@+id/setting_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#EAE6DC"
+        android:layout_marginStart="54dp" />
+</LinearLayout>
