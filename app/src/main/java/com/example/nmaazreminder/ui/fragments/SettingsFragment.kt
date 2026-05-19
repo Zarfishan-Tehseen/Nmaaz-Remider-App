@@ -23,7 +23,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             // --- Group 1: Prayer Calculation ---
             SettingItem(1, "Location", "Karachi, Pakistan", R.drawable.ic_location, categoryHeader = "PRAYER CALCULATION"),
             SettingItem(2, "Method", "University of Karachi", R.drawable.ic_global),
-            SettingItem(3, "Madhab", "Hanafi", R.drawable.ic_fiqh, isLastInGroup = true),
+            SettingItem(3, "Madhab", "Hanafi", R.drawable.ic_ain, isLastInGroup = true),
 
             // --- Group 2: Reminders ---
             SettingItem(4, "Notifications", "4 of 5 prayers", R.drawable.ic_notification, categoryHeader = "REMINDERS"),
@@ -33,7 +33,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             // --- Group 3: Appearance ---
             SettingItem(7, "Dark theme", "Light & airy", R.drawable.ic_sun_cloud_accent, categoryHeader = "APPEARANCE", isToggleable = true, isChecked = false),
             SettingItem(8, "Language", "English + Arabic", R.drawable.ic_global),
-            SettingItem(9, "Show Arabic prayer names", "...", R.drawable.ic_arabic, isToggleable = true, isChecked = true),
+            SettingItem(9, "Show Arabic prayer names", "...", R.drawable.ic_allah, isToggleable = true, isChecked = true),
             SettingItem(10, "Home screen style", "List", R.drawable.ic_home_style, isLastInGroup = true),
 
             // --- Group 4: About ---

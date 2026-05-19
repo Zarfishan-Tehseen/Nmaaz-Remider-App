@@ -1,14 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.TasbeehFragment">
+    android:background="#F5F3ED"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/header_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
 
-</FrameLayout>
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="#FFFFFF"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tasbeeh"
+                android:textColor="#2E312F"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-bold" />
+
+            <TextView
+                android:id="@+id/tv_today_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Today: 0 cycles · 0 total"
+                android:textColor="#828683"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btn_reset"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="#FFFFFF"
+            android:padding="10dp"
+            android:src="@drawable/ic_refresh"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_selector_container"
+        android:layout_below="@id/header_container"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/card_phrase_selector"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_phrase_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="#FFFFFF">
+
+            <TextView
+                android:id="@+id/tv_arabic_phrase"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="سُبْحَانَ اللهِ"
+                android:textColor="#0D3E31"
+                android:textSize="26sp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_transliteration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Subhān Allāh"
+                android:textColor="#2E312F"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/tv_english_translation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Glory be to Allah"
+                android:textColor="#828683"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"/>
+
+            <TextView
+                android:id="@+id/tv_phrase_index"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TAP TO CHANGE (1/5)"
+                android:textColor="#A2A6A3"
+                android:textSize="10sp"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:letterSpacing="0.05"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/layout_counter_clicker"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dotted_circle_track" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circular_progress"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                app:indicatorSize="274dp"
+                app:trackThickness="5dp"
+                app:indicatorColor="#0D3E31"
+                app:trackColor="@android:color/transparent"
+                android:progress="0"
+                app:trackCornerRadius="10dp" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_gravity="center"
+                android:background="#FFFFFF"
+                android:elevation="4dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_counter_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="#2E312F"
+                    android:textSize="72sp"
+                    android:fontFamily="serif" />
+
+                <TextView
+                    android:id="@+id/tv_current_limit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OF 33"
+                    android:textColor="#828683"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_selector_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="96dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/btn_target_33"
+                android:layout_width="54dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_target_selected"
+                android:text="33"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btn_target_99"
+                android:layout_width="54dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_target_unselected"
+                android:text="99"
+                android:textColor="#2E312F"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btn_target_100"
+                android:layout_width="54dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_target_unselected"
+                android:text="100"
+                android:textColor="#2E312F"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btn_target_500"
+                android:layout_width="54dp"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_target_unselected"
+                android:text="500"
+                android:textColor="#2E312F"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TAP THE BEAD TO COUNT"
+            android:textColor="#828683"
+            android:textSize="11sp"
+            android:letterSpacing="0.05"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</RelativeLayout>
