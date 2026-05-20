@@ -86,5 +86,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.1.0")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+    // Jetpack Navigation Component Libraries
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
 
 }

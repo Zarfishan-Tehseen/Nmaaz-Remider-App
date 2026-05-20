@@ -1,5 +1,6 @@
 package com.example.nmaazreminder.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -7,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentTasbeehBinding
+import androidx.navigation.fragment.findNavController
 
 data class DhikrPhrase(
     val arabic: String,
@@ -27,7 +29,7 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
     private var completedCycles = 0
 
     private val phrasesList = listOf(
-        DhikrPhrase("سُبْحَانَ اللهِ", "Subhān Allāh", "Glory be to Allah"),
+        DhikrPhrase("سُبْحَانَ اللَّهِ", "Subhān Allāh", "Glory be to Allah"),
         DhikrPhrase("الْحَمْدُ لِلَّهِ", "Alhamdu lillāh", "Praise be to Allah"),
         DhikrPhrase("اللهُ أَكْبَرُ", "Allāhu Akbar", "Allah is the Greatest"),
         DhikrPhrase("لَا إِلٰهَ إِلَّا اللهُ", "Lā ilāha illallāh", "There is no god but Allah"),
@@ -38,6 +40,8 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentTasbeehBinding.bind(view)
 
+        // Initial custom view draw on launch setup pass
+        binding.beadProgressIndicator.updateProgress(0, maxLimit)
         updatePhraseDisplay()
         updateStatsDisplay()
 
@@ -58,6 +62,9 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
             resetCurrentSessionOnly()
         }
 
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()        }
+
         // Target Limit Button Listeners
         binding.btnTarget33.setOnClickListener { changeTargetLimit(33, binding.btnTarget33) }
         binding.btnTarget99.setOnClickListener { changeTargetLimit(99, binding.btnTarget99) }
@@ -70,21 +77,16 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
             currentCount++
             absoluteTotalCount++
 
-            // Update digit strings
             binding.tvCounterDigits.text = currentCount.toString()
-
-            // Calculate the percentage mapping for the indicator
-            val progressPercent = ((currentCount.toFloat() / maxLimit.toFloat()) * 100).toInt()
-            binding.circularProgress.setProgress(progressPercent, true)
+            binding.beadProgressIndicator.updateProgress(currentCount, maxLimit)
 
             if (currentCount == maxLimit) {
                 completedCycles++
                 currentCount = 0
 
-                // Brief handler delay makes the "complete" transition smooth
-                binding.circularProgress.postDelayed({
+                binding.beadProgressIndicator.postDelayed({
                     binding.tvCounterDigits.text = "0"
-                    binding.circularProgress.setProgress(0, false)
+                    binding.beadProgressIndicator.updateProgress(0, maxLimit)
                 }, 150)
             }
             updateStatsDisplay()
@@ -93,14 +95,15 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
 
     private fun changeTargetLimit(newLimit: Int, clickedView: TextView) {
         maxLimit = newLimit
+
         binding.tvCurrentLimit.text = "OF $maxLimit"
         currentCount = 0
         binding.tvCounterDigits.text = "0"
-        binding.circularProgress.setProgress(0, false)
 
-        // Revert all selector buttons to unselected state drawables
+        binding.beadProgressIndicator.updateProgress(0, maxLimit)
+
         val unselectedBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_target_unselected)
-        val darkTextColor = ContextCompat.getColor(requireContext(), R.color.bottom_nav_icon_color) // or #2E312F
+        val darkTextColor = ContextCompat.getColor(requireContext(), R.color.bottom_nav_icon_color)
 
         val buttonsList = listOf(binding.btnTarget33, binding.btnTarget99, binding.btnTarget100, binding.btnTarget500)
         buttonsList.forEach { btn ->
@@ -108,7 +111,6 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
             btn.setTextColor(darkTextColor)
         }
 
-        // Apply active design states to chosen button anchor context
         clickedView.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_target_selected)
         clickedView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
     }
@@ -128,7 +130,7 @@ class TasbeehFragment : Fragment(R.layout.fragment_tasbeeh) {
     private fun resetCurrentSessionOnly() {
         currentCount = 0
         binding.tvCounterDigits.text = "0"
-        binding.circularProgress.setProgress(0, true)
+        binding.beadProgressIndicator.updateProgress(0, maxLimit)
     }
 
     override fun onDestroyView() {
