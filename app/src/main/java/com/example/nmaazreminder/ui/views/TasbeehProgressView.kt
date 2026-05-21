@@ -43,23 +43,19 @@ class TasbeehProgressView @JvmOverloads constructor(
         val centerY = height / 2f
 
         // Dynamic padding translation to match layout boundaries cleanly
-        val radius = (width / 2f) - dpToPx(10f)
+        val radius = (width / 2f) - dpToPx(30f)
 
         // Dynamic slot limits based on chosen target button parameters
-        val totalBeadSlots = if (maxLimit > 100) 100 else maxLimit
+        val totalBeadSlots =  maxLimit
 
         // Bead size scaling profile: 33 gets large beads, 100 gets sleek small beads
         val beadRadius = when {
             maxLimit <= 33 -> dpToPx(4.5f)
             maxLimit <= 100 -> dpToPx(2.5f)
-            else -> dpToPx(1.8f)
+            else -> dpToPx(1.0f)
         }
 
-        val activeDotsCount = if (maxLimit <= 100) {
-            currentCount
-        } else {
-            ((currentCount.toFloat() / maxLimit.toFloat()) * totalBeadSlots).toInt()
-        }
+        val activeDotsCount = currentCount
 
         for (i in 0 until totalBeadSlots) {
             // -90 degrees locks starting bead explicitly at 12 o'clock top center

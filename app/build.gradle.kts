@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
-}
+    id("org.jetbrains.kotlin.plugin.parcelize")}
 
 android {
     namespace = "com.example.nmaazreminder"

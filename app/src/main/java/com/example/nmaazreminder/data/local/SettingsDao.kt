@@ -14,6 +14,6 @@ interface SettingsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveSettings(settings: PrayerSettings)
 
-    @Query("UPDATE prayer_settings SET cityName = :name, latitude = :lat, longitude = :lon WHERE id = 0")
+    @Query("UPDATE prayer_settings SET cityName = :name, latitude = :lat, longitude = :lon WHERE id = 1")
     suspend fun updateLocation(name: String, lat: Double, lon: Double)
 }

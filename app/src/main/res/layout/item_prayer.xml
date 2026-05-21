@@ -4,12 +4,17 @@
     android:id="@+id/row_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clickable="false"
+    android:focusable="false">
 
     <RelativeLayout
+        android:id="@+id/layoutClickableRow"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:paddingHorizontal="16dp">
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/bg_row_ripple">
 
         <ImageView
             android:id="@+id/iv_prayer_icon"

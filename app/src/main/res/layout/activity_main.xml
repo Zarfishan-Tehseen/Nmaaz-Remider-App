@@ -22,12 +22,12 @@
 
         app:labelVisibilityMode="labeled"
 
-        app:itemActiveIndicatorStyle="@style/ForceLightGreenIndicator"
+        app:itemActiveIndicatorStyle="@null"
 
         app:itemIconTint="@color/bottom_nav_icon_color"
         app:itemTextColor="@color/bottom_nav_icon_color"
 
         style="@style/Widget.Material3.BottomNavigationView"
-        app:menu="@menu/bottom_nav_menu"/>
+        app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

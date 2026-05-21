@@ -31,7 +31,8 @@ class MainViewModel @Inject constructor(
             val times = getPrayerTimesUseCase.execute(settings)
             alarmScheduler.scheduleAlarms(times)
 
-            times
+            // Pass both parameters down as a combined pair wrapper object
+            Pair(settings.cityName, times)
         } else {
             null
         }

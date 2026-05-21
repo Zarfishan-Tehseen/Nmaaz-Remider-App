@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_prayers"
-        android:icon="@drawable/ic_notification"
+        android:icon="@drawable/selector_nav_prayers"
         android:title="Prayers" />
     <item
         android:id="@+id/nav_qibla"
-        android:icon="@drawable/ic_qibla"
+        android:icon="@drawable/selector_nav_qibla"
         android:title="Qibla" />
     <item
         android:id="@+id/nav_tasbeeh"
-        android:icon="@drawable/ic_tasbeeh"
+        android:icon="@drawable/selector_nav_tasbeeh"
         android:title="Tasbeeh" />
     <item
         android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_settings"
+        android:icon="@drawable/selector_nav_settings"
         android:title="Settings" />
 </menu>

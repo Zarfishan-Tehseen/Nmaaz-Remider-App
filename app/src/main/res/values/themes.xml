@@ -8,6 +8,8 @@
         <item name="colorPrimaryContainer">#D4E7E1</item>
 
         <item name="colorOnPrimaryContainer">@color/light_green</item>
+
+        <item name="colorControlHighlight">#E5E5E5</item>
     </style>
 
     <style name="Theme.NmaazReminder" parent="Base.Theme.NmaazReminder">
@@ -43,9 +45,7 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">#F1F2F6</item>
     </style>
-    <style name="ForceLightGreenIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">#D4E7E1</item>
-    </style>
+
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/green</item>

@@ -1,60 +1,143 @@
 package com.example.nmaazreminder.ui.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.os.CountDownTimer
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.batoulapps.adhan.Prayer
+import com.batoulapps.adhan.PrayerTimes
 import com.example.nmaazreminder.R
+import com.example.nmaazreminder.databinding.FragmentHomeBinding
+import com.example.nmaazreminder.ui.main.PrayerAdapter
+import com.example.nmaazreminder.ui.main.PrayerItem
+import com.example.nmaazreminder.ui.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+@AndroidEntryPoint
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private val viewModel: MainViewModel by viewModels()
+    private var countDownTimer: CountDownTimer? = null
+    private lateinit var prayerAdapter: PrayerAdapter
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentHomeBinding.bind(view)
+
+        // 🔄 Navigate ONLY when clicking on the RecyclerView list rows
+        prayerAdapter = PrayerAdapter { clickedPrayer ->
+
+            if (clickedPrayer.name.equals("Sunrise", ignoreCase = true)) {
+                // Do absolutely nothing — this makes it unclickable!
+                return@PrayerAdapter
+            }
+
+            val bundle = Bundle().apply {
+                putParcelable("selectedPrayer", clickedPrayer)
+            }
+            // Direct ID navigation using destination ID instead of action
+            findNavController().navigate(R.id.prayerDetailFragment, bundle)
+        }
+
+        binding.rvPrayerList.adapter = prayerAdapter
+        binding.tvCalendarGregorian.text = viewModel.currentDateString
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.prayerState.collect { dataPair ->
+                    if (dataPair != null) {
+                        val (cityName, times) = dataPair
+                        binding.tvCurrentLocation.text = cityName
+
+                        updatePrayerUI(times)
+                        submitPrayerList(times)
+                    }
+                }
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    private fun updatePrayerUI(times: PrayerTimes) {
+        val nextPrayer = times.nextPrayer()
+        val nextPrayerTime: Date = times.timeForPrayer(nextPrayer)
+        val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+
+        val (englishName, arabicName) = when (nextPrayer) {
+            Prayer.FAJR -> "Fajr" to "الفجر"
+            Prayer.SUNRISE -> "Sunrise" to "الشروق"
+            Prayer.DHUHR -> "Dhuhr" to "الظهر"
+            Prayer.ASR -> "Asr" to "العصر"
+            Prayer.MAGHRIB -> "Maghrib" to "المغرب"
+            Prayer.ISHA -> "Isha" to "العشاء"
+            else -> "Fajr" to "الفجر"
+        }
+
+        binding.tvNextPrayerTitle.text = englishName
+        binding.tvNextPrayerArabic.text = arabicName
+        binding.tvNextPrayerTime.text = timeFormatter.format(nextPrayerTime)
+
+        // 🛑 (Card click listener logic completely removed from here)
+
+        val currentTimeMs = System.currentTimeMillis()
+        var targetTimeMs = nextPrayerTime.time
+
+        if (targetTimeMs < currentTimeMs) {
+            targetTimeMs += 24 * 60 * 60 * 1000
+        }
+
+        startPrayerCountdown(targetTimeMs - currentTimeMs)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun submitPrayerList(times: PrayerTimes) {
+        val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+
+        val list = listOf(
+            PrayerItem("Fajr", timeFormatter.format(times.timeForPrayer(Prayer.FAJR))),
+            PrayerItem("Sunrise", timeFormatter.format(times.timeForPrayer(Prayer.SUNRISE))),
+            PrayerItem("Dhuhr", timeFormatter.format(times.timeForPrayer(Prayer.DHUHR))),
+            PrayerItem("Asr", timeFormatter.format(times.timeForPrayer(Prayer.ASR))),
+            PrayerItem("Maghrib", timeFormatter.format(times.timeForPrayer(Prayer.MAGHRIB))),
+            PrayerItem("Isha", timeFormatter.format(times.timeForPrayer(Prayer.ISHA)))
+        )
+
+        prayerAdapter.submitList(list)
+    }
+
+    private fun startPrayerCountdown(totalMs: Long) {
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(totalMs, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val hours = (millisUntilFinished / (1000 * 60 * 60)) % 24
+                val minutes = (millisUntilFinished / (1000 * 60)) % 60
+                val seconds = (millisUntilFinished / 1000) % 60
+
+                binding.tvCountdownHours.text = String.format(Locale.getDefault(), "%02d", hours)
+                binding.tvCountdownMinutes.text = String.format(Locale.getDefault(), "%02d", minutes)
+                binding.tvCountdownSeconds.text = String.format(Locale.getDefault(), "%02d", seconds)
             }
+
+            override fun onFinish() {
+                binding.tvCountdownHours.text = "00"
+                binding.tvCountdownMinutes.text = "00"
+                binding.tvCountdownSeconds.text = "00"
+            }
+        }.start()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        countDownTimer?.cancel()
+        _binding = null
     }
 }
