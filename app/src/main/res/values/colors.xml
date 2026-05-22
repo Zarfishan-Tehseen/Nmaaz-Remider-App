@@ -21,5 +21,6 @@
     <color name="state_success">#2ECC71</color>
     <color name="state_pending">#E74C3C</color>
     <color name="state_inactive">#4A6B5D</color>
+    <color name="_6aecb576">#40ECB576</color>
 
 </resources>

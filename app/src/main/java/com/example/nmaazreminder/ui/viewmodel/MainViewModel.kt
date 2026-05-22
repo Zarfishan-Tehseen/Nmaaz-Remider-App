@@ -7,7 +7,7 @@ import com.example.nmaazreminder.data.local.PrayerNotification
 import com.example.nmaazreminder.data.local.PrayerSettings
 import com.example.nmaazreminder.data.repository.PrayerRepository
 import com.example.nmaazreminder.domain.usecase.GetPrayerTimesUseCase
-import com.example.nmaazreminder.ui.main.PrayerItem
+import com.example.nmaazreminder.ui.fragments.home.PrayerItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map

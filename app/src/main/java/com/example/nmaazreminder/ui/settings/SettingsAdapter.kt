@@ -55,6 +55,7 @@ class SettingsAdapter(
                 // Clear state listener before forcing checkbox adjustments to prevent recursive triggers
                 binding.switchSetting.setOnCheckedChangeListener(null)
                 binding.switchSetting.isChecked = item.isChecked
+
                 binding.switchSetting.setOnCheckedChangeListener { _, isChecked ->
                     item.isChecked = isChecked
                     onToggleChanged(item, isChecked)
@@ -62,10 +63,14 @@ class SettingsAdapter(
             } else {
                 binding.switchSetting.visibility = android.view.View.GONE
                 binding.ivChevron.visibility = android.view.View.VISIBLE
-                binding.root.setOnClickListener { onItemClicked(item) }
             }
 
-            // 4. Group Card Divider Divider Line Renderer
+            // Global Click Listener: Moved outside the if/else block so ALL rows are clickable
+            binding.root.setOnClickListener {
+                onItemClicked(item)
+            }
+
+            // 4. Group Card Divider Line Renderer
             if (item.isLastInGroup) {
                 binding.settingDivider.visibility = android.view.View.GONE
             } else {

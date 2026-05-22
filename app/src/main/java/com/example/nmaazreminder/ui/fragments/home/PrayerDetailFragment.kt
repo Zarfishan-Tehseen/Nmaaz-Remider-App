@@ -1,7 +1,9 @@
-package com.example.nmaazreminder.ui.fragments
+package com.example.nmaazreminder.ui.fragments.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -12,7 +14,7 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentPrayerDetailBinding
-import com.example.nmaazreminder.ui.main.PrayerItem
+import com.example.nmaazreminder.ui.fragments.home.PrayerItem
 import com.example.nmaazreminder.ui.prayerdetail.PrayerDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +39,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
             binding.tvDetailTime.text = prayer.time
             setupDynamicTheme(prayer.name)
 
-            android.util.Log.d("PRAYER_DEBUG", "Loading data for name: '${prayer.name}'")
+            Log.d("PRAYER_DEBUG", "Loading data for name: '${prayer.name}'")
             viewModel.loadSettings(prayer.name)
         }
 
@@ -48,7 +50,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
         // 🚀 STEP 1: Define your listener ONCE here, completely outside the collector loop
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
             TransitionManager.beginDelayedTransition(
-                binding.layoutSubSettings.parent as android.view.ViewGroup,
+                binding.layoutSubSettings.parent as ViewGroup,
                 AutoTransition()
             )
 
@@ -95,7 +97,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
     private fun rebindSwitchListener() {
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
             TransitionManager.beginDelayedTransition(
-                binding.layoutSubSettings.parent as android.view.ViewGroup,
+                binding.layoutSubSettings.parent as ViewGroup,
                 AutoTransition()
             )
             binding.layoutSubSettings.visibility = if (isChecked) View.VISIBLE else View.GONE

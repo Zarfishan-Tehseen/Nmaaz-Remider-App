@@ -6,32 +6,61 @@
     app:startDestination="@id/nav_prayers">
     <fragment
     android:id="@+id/nav_prayers"
-    android:name="com.example.nmaazreminder.ui.fragments.HomeFragment"
+    android:name="com.example.nmaazreminder.ui.fragments.home.HomeFragment"
     android:label="Prayers"
     tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_qibla"
-        android:name="com.example.nmaazreminder.ui.fragments.QiblaFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.qibla.QiblaFragment"
         android:label="Qibla"
         tools:layout="@layout/fragment_qibla" />
 
     <fragment
         android:id="@+id/nav_tasbeeh"
-        android:name="com.example.nmaazreminder.ui.fragments.TasbeehFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.tasbeeh.TasbeehFragment"
         android:label="Tasbeeh"
         tools:layout="@layout/fragment_tasbeeh" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.example.nmaazreminder.ui.fragments.SettingsFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.SettingsFragment"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/prayerDetailFragment"
-        android:name="com.example.nmaazreminder.ui.fragments.PrayerDetailFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.home.PrayerDetailFragment"
         android:label="PrayerDetailFragment"
         tools:layout="@layout/fragment_prayer_detail" />
+
+    <fragment
+        android:id="@+id/locationSelectorFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.home.LocationSelectorFragment"
+        android:label="LocationSelectorFragment"
+        tools:layout="@layout/fragment_location_selector" />
+
+    <fragment
+        android:id="@+id/nav_calcmethod"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.CalculationMethodFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_calculation_method" />
+
+    <fragment
+        android:id="@+id/nav_madhab"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.MadhabSelectorFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_madhab_selector" />
+    <fragment
+            android:id="@+id/nav_notifications"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.NotificationSettingsFragment"
+            android:label="Settings"
+            tools:layout="@layout/fragment_notification_settings" />
+
+    <fragment
+            android:id="@+id/nav_adhan_sound"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.AdhanSoundFragment"
+            android:label="Settings"
+            tools:layout="@layout/fragment_adhan_sound" />
 
 </navigation>

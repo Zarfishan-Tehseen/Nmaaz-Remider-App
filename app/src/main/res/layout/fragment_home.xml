@@ -163,6 +163,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/layout_badge"
                         android:layout_marginTop="8dp"
+                        android:fontFamily="@font/playfair_display"
                         android:text="Asr"
                         android:textColor="@android:color/white"
                         android:textSize="36sp"
@@ -173,6 +174,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_next_prayer_title"
+                        android:fontFamily="@font/amiri"
                         android:text="العصر"
                         android:textColor="#E0A96D"
                         android:textSize="22sp" />
@@ -183,6 +185,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_next_prayer_arabic"
                         android:layout_marginTop="12dp"
+                        android:fontFamily="@font/cinzel_decorative"
                         android:text="4:25 PM"
                         android:textColor="@android:color/white"
                         android:textSize="28sp" />
@@ -226,21 +229,30 @@
                             android:orientation="horizontal">
 
                             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
-                                <TextView android:id="@+id/tv_countdown_hours" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="01" android:textColor="@android:color/white" android:textSize="26sp" android:textStyle="bold"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HR" android:textColor="#8AAEA5" android:textSize="10sp"/>
+
+                                <TextView
+                                    android:id="@+id/tv_countdown_hours"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/cinzel_decorative"
+                                    android:text="01"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content"  android:layout_height="wrap_content" android:text="HR" android:textColor="#8AAEA5" android:textSize="10sp"/>
                             </LinearLayout>
 
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=":" android:textColor="@android:color/white" android:textSize="24sp" android:layout_marginHorizontal="12dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/cinzel_decorative" android:text=":" android:textColor="@android:color/white" android:textSize="24sp" android:layout_marginHorizontal="12dp"/>
 
                             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
-                                <TextView android:id="@+id/tv_countdown_minutes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="54" android:textColor="@android:color/white" android:textSize="26sp" android:textStyle="bold"/>
+                                <TextView android:id="@+id/tv_countdown_minutes" android:fontFamily="@font/cinzel_decorative" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="54" android:textColor="@android:color/white" android:textSize="26sp" android:textStyle="bold"/>
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MIN" android:textColor="#8AAEA5" android:textSize="10sp"/>
                             </LinearLayout>
 
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=":" android:textColor="@android:color/white" android:textSize="24sp" android:layout_marginHorizontal="12dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/cinzel_decorative" android:text=":" android:textColor="@android:color/white" android:textSize="24sp" android:layout_marginHorizontal="12dp"/>
 
                             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
-                                <TextView android:id="@+id/tv_countdown_seconds" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="52" android:textColor="@android:color/white" android:textSize="26sp" android:textStyle="bold"/>
+                                <TextView android:id="@+id/tv_countdown_seconds" android:fontFamily="@font/cinzel_decorative" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="52" android:textColor="@android:color/white" android:textSize="26sp" android:textStyle="bold"/>
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SEC" android:textColor="#8AAEA5" android:textSize="10sp"/>
                             </LinearLayout>
                         </LinearLayout>

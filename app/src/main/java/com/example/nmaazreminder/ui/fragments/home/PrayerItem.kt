@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.main
+package com.example.nmaazreminder.ui.fragments.home
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

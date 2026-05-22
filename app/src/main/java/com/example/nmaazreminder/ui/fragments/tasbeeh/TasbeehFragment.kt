@@ -1,6 +1,5 @@
-package com.example.nmaazreminder.ui.fragments
+package com.example.nmaazreminder.ui.fragments.tasbeeh
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView

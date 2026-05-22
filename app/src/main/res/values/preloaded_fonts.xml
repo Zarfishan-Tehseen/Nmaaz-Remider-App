@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/amiri</item>
+        <item>@font/amiri_quran</item>
+        <item>@font/cinzel</item>
+        <item>@font/cinzel_decorative</item>
+        <item>@font/playfair_display</item>
+        <item>@font/plus_jakarta_sans_bold</item>
+    </array>
+</resources>

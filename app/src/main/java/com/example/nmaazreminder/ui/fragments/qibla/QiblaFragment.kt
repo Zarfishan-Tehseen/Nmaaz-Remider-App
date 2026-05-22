@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments
+package com.example.nmaazreminder.ui.fragments.qibla
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

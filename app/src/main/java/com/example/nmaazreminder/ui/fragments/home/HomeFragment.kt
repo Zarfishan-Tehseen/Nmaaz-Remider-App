@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments
+package com.example.nmaazreminder.ui.fragments.home
 
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,13 +13,14 @@ import com.batoulapps.adhan.Prayer
 import com.batoulapps.adhan.PrayerTimes
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentHomeBinding
-import com.example.nmaazreminder.ui.main.PrayerAdapter
-import com.example.nmaazreminder.ui.main.PrayerItem
+import com.example.nmaazreminder.ui.fragments.home.PrayerAdapter
+import com.example.nmaazreminder.ui.fragments.home.PrayerItem
 import com.example.nmaazreminder.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -48,6 +49,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
             // Direct ID navigation using destination ID instead of action
             findNavController().navigate(R.id.prayerDetailFragment, bundle)
+        }
+        binding.layoutLocationSelector.setOnClickListener {
+            findNavController().navigate(R.id.locationSelectorFragment)
         }
 
         binding.rvPrayerList.adapter = prayerAdapter
@@ -122,9 +126,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val minutes = (millisUntilFinished / (1000 * 60)) % 60
                 val seconds = (millisUntilFinished / 1000) % 60
 
-                binding.tvCountdownHours.text = String.format(Locale.getDefault(), "%02d", hours)
-                binding.tvCountdownMinutes.text = String.format(Locale.getDefault(), "%02d", minutes)
-                binding.tvCountdownSeconds.text = String.format(Locale.getDefault(), "%02d", seconds)
+                binding.tvCountdownHours.text = String.Companion.format(Locale.getDefault(), "%02d", hours)
+                binding.tvCountdownMinutes.text = String.Companion.format(Locale.getDefault(), "%02d", minutes)
+                binding.tvCountdownSeconds.text = String.Companion.format(Locale.getDefault(), "%02d", seconds)
             }
 
             override fun onFinish() {

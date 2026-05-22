@@ -1,6 +1,5 @@
-package com.example.nmaazreminder.ui.main
+package com.example.nmaazreminder.ui.fragments.home
 
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.ItemPrayerBinding
+import com.example.nmaazreminder.ui.fragments.home.PrayerItem
 
 class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
     ListAdapter<PrayerItem, PrayerAdapter.PrayerViewHolder>(DiffCallback) {

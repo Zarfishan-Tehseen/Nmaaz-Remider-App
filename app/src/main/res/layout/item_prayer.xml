@@ -37,16 +37,17 @@
                 android:id="@+id/tv_prayer_name_english"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/playfair_display"
                 android:text="Fajr"
                 android:textColor="#333333"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-medium" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tv_prayer_name_arabic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
+                android:fontFamily="@font/amiri"
                 android:text="الفجر"
                 android:textColor="#999999"
                 android:textSize="15sp" />
@@ -61,7 +62,7 @@
             android:text="5:10 AM"
             android:textColor="#333333"
             android:textSize="16sp"
-            android:fontFamily="sans-serif" />
+            android:fontFamily="@font/cinzel_decorative" />
 
     </RelativeLayout>
 
