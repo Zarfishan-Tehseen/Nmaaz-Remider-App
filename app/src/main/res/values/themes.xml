@@ -53,4 +53,13 @@
         <item name="postSplashScreenTheme">@style/Theme.NmaazReminder</item>
     </style>
 
+    <style name="Widget.Sakinah.PresetChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/preset_chip_bg_color_selector</item>
+        <item name="android:textColor">@color/preset_chip_text_color_selector</item>
+        <item name="chipCornerRadius">24dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="showMotionSpec">@null</item>
+        <item name="hideMotionSpec">@null</item>
+    </style>
+
 </resources>

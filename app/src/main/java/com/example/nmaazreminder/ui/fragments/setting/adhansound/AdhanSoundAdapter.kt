@@ -1,13 +1,14 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.adhansound
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.R
-import com.example.nmaazreminder.ui.fragments.setting.AdhanSoundItem
 import com.example.nmaazreminder.databinding.ItemAdhanSoundCardBinding
+import com.example.nmaazreminder.utils.setBounceClickListener
 
 class AdhanSoundAdapter(
     private val items: List<AdhanSoundItem>,
@@ -39,17 +40,17 @@ class AdhanSoundAdapter(
             if (isSelected) {
                 layoutInnerContainer.background = ContextCompat.getDrawable(rootCardView.context, R.drawable.bg_card_selected_border)
                 viewIconBg.setBackgroundResource(R.drawable.bg_pill_active) // Dark solid green circle
-                ivSoundTypeIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.WHITE)
+                ivSoundTypeIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)
 
                 tvSoundTitle.setTextColor(Color.parseColor("#143522"))
-                btnPlayPause.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#143522"))
+                btnPlayPause.imageTintList = ColorStateList.valueOf(Color.parseColor("#143522"))
             } else {
                 layoutInnerContainer.background = null
                 viewIconBg.setBackgroundResource(R.drawable.bg_rounded_bell_tint) // Soft pastel green tint circle
-                ivSoundTypeIcon.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#143522"))
+                ivSoundTypeIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#143522"))
 
                 tvSoundTitle.setTextColor(Color.parseColor("#111111"))
-                btnPlayPause.imageTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#143522"))
+                btnPlayPause.imageTintList = ColorStateList.valueOf(Color.parseColor("#143522"))
             }
 
             // 2. Differentiate structural asset vector icons (Silent option vs Mosque)
@@ -60,12 +61,11 @@ class AdhanSoundAdapter(
             }
 
             // 3. Sync Play/Pause Icon asset toggle based on preview status
-            // Changed from ic_preview to match your drawable standard layout naming pattern
             val playIcon = if (currentItem.isPlayingPreview) R.drawable.ic_pause else R.drawable.ic_preview
             btnPlayPause.setImageResource(playIcon)
 
-            // ACTION A: Clicking the row container ONLY shifts selection frames (As seen in the reference video)
-            rootCardView.setOnClickListener {
+            // ✨ ACTION A: SWAPPED to use your premium scale-down bounce click effect on row selection
+            rootCardView.setBounceClickListener {
                 val currentAdapterPosition = holder.adapterPosition
                 if (currentAdapterPosition != RecyclerView.NO_POSITION && selectedPosition != currentAdapterPosition) {
                     val oldPos = selectedPosition
@@ -76,7 +76,7 @@ class AdhanSoundAdapter(
                 }
             }
 
-            // ACTION B: Clicking the play/pause circular button explicitly triggers audio tracking logic
+            // ACTION B: Clicking the play/pause circular button explicitly triggers audio tracking logic (Kept isolated from scale bounce)
             btnPlayPause.setOnClickListener {
                 val currentAdapterPosition = holder.adapterPosition
                 if (currentAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener

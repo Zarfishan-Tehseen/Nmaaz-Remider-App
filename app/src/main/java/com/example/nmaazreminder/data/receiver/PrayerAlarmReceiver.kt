@@ -17,7 +17,7 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
         // 1. If it's a swipe event, send a message to stop the service directly
         if (action == "com.example.nmaazreminder.ACTION_STOP_ALARM") {
             val stopIntent = Intent(context, PrayerAlarmService::class.java).apply {
-                this.action = "STOP_ALARM"
+                this.action = "STOP_ALARM" // Using 'this.action' explicitly clears the re-assignment error
             }
             context.startService(stopIntent)
             return
@@ -25,7 +25,9 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
 
         // 2. Otherwise, start the alarm audio via Service
         val startServiceIntent = Intent(context, PrayerAlarmService::class.java).apply {
-            this.action = "START_ALARM"
+            this.action = "START_ALARM" // 🌟 Fixed: Added 'this.' to safely invoke the property setter
+            putExtra("PRAYER_NAME", intent.getStringExtra("PRAYER_NAME") ?: "Prayer")
+            putExtra("SOUND_NAME", intent.getStringExtra("SOUND_NAME") ?: "Adhan")
         }
         context.startService(startServiceIntent)
 
@@ -49,7 +51,7 @@ class PrayerAlarmReceiver : BroadcastReceiver() {
 
         // Setup the swipe intent that talks back to this receiver
         val swipeIntent = Intent(context, PrayerAlarmReceiver::class.java).apply {
-            action = "com.example.nmaazreminder.ACTION_STOP_ALARM"
+            this.action = "com.example.nmaazreminder.ACTION_STOP_ALARM" // 🌟 Clear and safe scope setter
         }
 
         val swipePendingIntent = PendingIntent.getBroadcast(

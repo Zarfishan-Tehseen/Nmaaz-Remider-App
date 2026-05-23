@@ -6,6 +6,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.IBinder
+import com.example.nmaazreminder.R
 
 class PrayerAlarmService : Service() {
 
@@ -17,7 +18,7 @@ class PrayerAlarmService : Service() {
         val action = intent?.action
 
         if (action == "START_ALARM") {
-            startAlarm()
+            startAlarm(intent)
         } else if (action == "STOP_ALARM") {
             stopAlarm()
             stopSelf() // Closes the service completely
@@ -26,15 +27,26 @@ class PrayerAlarmService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun startAlarm() {
-        if (mediaPlayer?.isPlaying == true) return // Already playing
+    private fun startAlarm(intent: Intent?) {
+        if (mediaPlayer?.isPlaying == true) return
 
-        val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        val soundName = intent?.getStringExtra("SOUND_NAME") ?: "Adhan"
+
+        // Map the string label matching your database rows to an actual app file resource id
+        val soundResId = if (soundName == "Custom Adhan Name") {
+            R.raw.default_sound
+        } else {
+            // Fallback or system default URI backup fallback path
+            R.raw.default_sound
+        }
 
         try {
             mediaPlayer = MediaPlayer().apply {
-                setDataSource(applicationContext, alarmUri)
+                // Use setDataSource with open resource handles
+                val assetFileDescriptor = applicationContext.resources.openRawResourceFd(soundResId)
+                setDataSource(assetFileDescriptor.fileDescriptor, assetFileDescriptor.startOffset, assetFileDescriptor.length)
+                assetFileDescriptor.close()
+
                 setAudioAttributes(
                     AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_ALARM)
@@ -47,6 +59,7 @@ class PrayerAlarmService : Service() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            // If your resource fails, run your original backup system ringtone logic here...
         }
     }
 

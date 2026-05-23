@@ -1,9 +1,11 @@
-package com.example.nmaazreminder.ui.prayerdetail
+package com.example.nmaazreminder.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nmaazreminder.data.alarm.PrayerAlarmScheduler
 import com.example.nmaazreminder.data.local.PrayerNotification
 import com.example.nmaazreminder.data.repository.PrayerRepository
+import com.example.nmaazreminder.domain.usecase.GetPrayerTimesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -12,18 +14,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PrayerDetailViewModel @Inject constructor(
-    private val repository: PrayerRepository
+    private val repository: PrayerRepository,
+    private val alarmScheduler: PrayerAlarmScheduler,       // 🌟 Injected to reschedule alarms
+    private val getPrayerTimesUseCase: GetPrayerTimesUseCase // 🌟 Injected to compute new timestamps
 ) : ViewModel() {
 
-    // 1. We use a StateFlow to hold the current prayer name being viewed
     private val _prayerName = MutableStateFlow<String?>(null)
 
-    // 2. We use flatMapLatest to switch the database observer whenever the prayer name changes
     @OptIn(ExperimentalCoroutinesApi::class)
     val settings: StateFlow<PrayerNotification?> = _prayerName
-        .filterNotNull() // agr name mai null hai to database ko nah dekho
+        .filterNotNull()
         .flatMapLatest { name ->
-            repository.getNotificationSetting(name) // This calls your Flow-based repository function
+            repository.getNotificationSetting(name)
         }
         .stateIn(
             scope = viewModelScope,
@@ -35,26 +37,50 @@ class PrayerDetailViewModel @Inject constructor(
         _prayerName.value = prayerName
     }
 
-    // 3. Update functions now just push data to the database.
-    // The Flow (settings) will automatically detect the change and update the UI.
     fun updateNotification(isEnabled: Boolean) {
         viewModelScope.launch {
             val current = settings.value ?: PrayerNotification(_prayerName.value ?: return@launch)
-            repository.updateNotificationSetting(current.copy(isEnabled = isEnabled))
+            val updated = current.copy(isEnabled = isEnabled)
+
+            repository.updateNotificationSetting(updated)
+            rescheduleAlarmsWithLatestSettings() // 🌟 Trigger background alarm sync
         }
     }
 
     fun updateSound(soundName: String) {
         viewModelScope.launch {
             val current = settings.value ?: PrayerNotification(_prayerName.value ?: return@launch)
-            repository.updateNotificationSetting(current.copy(soundName = soundName))
+            val updated = current.copy(soundName = soundName)
+
+            repository.updateNotificationSetting(updated)
+            rescheduleAlarmsWithLatestSettings() // 🌟 Trigger background alarm sync
         }
     }
 
     fun updateOffset(minutes: Int) {
         viewModelScope.launch {
             val current = settings.value ?: PrayerNotification(_prayerName.value ?: return@launch)
-            repository.updateNotificationSetting(current.copy(reminderOffset = minutes))
+            val updated = current.copy(reminderOffset = minutes)
+
+            repository.updateNotificationSetting(updated)
+            rescheduleAlarmsWithLatestSettings() // 🌟 Trigger background alarm sync
+        }
+    }
+
+    /**
+     * Helper function to extract current location/calculation configuration profiles,
+     * generate the raw prayer time structures, and hand them off to the scheduler.
+     */
+    private suspend fun rescheduleAlarmsWithLatestSettings() {
+        // 1. Grab the active global location configurations (City, Latitude, Longitude, etc.)
+        val globalSettings = repository.streamPrayerSettings().firstOrNull()
+
+        if (globalSettings != null) {
+            // 2. Compute the correct raw base prayer timings using the UseCase
+            val rawTimes = getPrayerTimesUseCase.execute(globalSettings)
+
+            // 3. Send them to the scheduler to apply individual user offsets and toggles safely
+            alarmScheduler.scheduleAlarms(rawTimes)
         }
     }
 }

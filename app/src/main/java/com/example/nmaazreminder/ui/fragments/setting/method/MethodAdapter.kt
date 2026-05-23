@@ -1,17 +1,17 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.method
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.ItemCalculationMethodBinding
-
-data class CalculationMethod(val id: Int, val title: String, val subtitle: String)
+import com.example.nmaazreminder.utils.setBounceClickListener
 
 class MethodAdapter(
-    private val items: List<CalculationMethod>,
+    private val items: List<MethodItem>,
     private var selectedPosition: Int, // Pass currently active selection index here
-    private val onMethodSelected: (CalculationMethod) -> Unit
+    private val onMethodSelected: (MethodItem) -> Unit
 ) : RecyclerView.Adapter<MethodAdapter.MethodViewHolder>() {
 
     inner class MethodViewHolder(val binding: ItemCalculationMethodBinding) :
@@ -31,14 +31,17 @@ class MethodAdapter(
             tvMethodTitle.text = currentItem.title
             tvMethodSubtitle.text = currentItem.subtitle
 
-            // Sync selection visual status state
-            radioButton.isChecked = (position == selectedPosition)
+            if (position == selectedPosition) {
+                ivRadioIndicator.setImageResource(R.drawable.ic_radio_selected)
+            } else {
+                ivRadioIndicator.setImageResource(R.drawable.ic_radio_unselected)
+            }
 
             // Hide the lower item divider line for the last element automatically
             dividerLine.visibility = if (position == items.size - 1) View.GONE else View.VISIBLE
 
-            // Click listener on entire row container block
-            rootItemLayout.setOnClickListener {
+            // Replaced standard click listener with our dynamic scale-down bounce click micro-interaction
+            rootItemLayout.setBounceClickListener {
                 if (selectedPosition != holder.adapterPosition) {
                     val oldPosition = selectedPosition
                     selectedPosition = holder.adapterPosition

@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater

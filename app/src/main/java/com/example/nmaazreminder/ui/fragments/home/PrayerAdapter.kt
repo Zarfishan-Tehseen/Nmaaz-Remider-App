@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.ItemPrayerBinding
 import com.example.nmaazreminder.ui.fragments.home.PrayerItem
+import com.example.nmaazreminder.utils.setBounceClickListener
 
 class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
     ListAdapter<PrayerItem, PrayerAdapter.PrayerViewHolder>(DiffCallback) {
@@ -36,8 +37,10 @@ class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
             binding.root.setOnClickListener(null)
             binding.root.isClickable = false
 
-            // 🎯 Handle Click and Ripple logic on the inner RelativeLayout container
+            // 🎯 Handle Click and Bounce logic on the inner RelativeLayout container
             if (item.name.lowercase().trim() == "sunrise") {
+                // Keep Sunrise unclickable and static
+                binding.layoutClickableRow.setOnTouchListener(null) // Safe layout clear for bounce extensions
                 binding.layoutClickableRow.setOnClickListener(null)
                 binding.layoutClickableRow.isClickable = false
                 binding.layoutClickableRow.isFocusable = false
@@ -46,10 +49,11 @@ class PrayerAdapter(private val onNotificationClick: (PrayerItem) -> Unit) :
                 binding.layoutClickableRow.isClickable = true
                 binding.layoutClickableRow.isFocusable = true
 
-                // 🎯 Reassign your forced ripple drawable directly
+                // Reassign background shape setup before applying premium touch interceptors
                 binding.layoutClickableRow.setBackgroundResource(R.drawable.bg_row_ripple)
 
-                binding.layoutClickableRow.setOnClickListener {
+                // ✨ SWAPPED: Applied the premium scale-down bounce click effect to active rows
+                binding.layoutClickableRow.setBounceClickListener {
                     onNotificationClick(item)
                 }
             }

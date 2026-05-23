@@ -90,4 +90,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
 
+    // 🌟 Add this line to unlock viewmodel delegation extensions
+    implementation ("androidx.fragment:fragment-ktx:1.8.5")
+
+
 }

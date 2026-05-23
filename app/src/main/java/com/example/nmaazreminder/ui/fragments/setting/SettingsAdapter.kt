@@ -1,11 +1,12 @@
-package com.example.nmaazreminder.ui.settings
+package com.example.nmaazreminder.ui.fragments.setting
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.databinding.ItemSettingsRowBinding
-import com.example.nmaazreminder.ui.settings.SettingItem
+import com.example.nmaazreminder.utils.setBounceClickListener
 import com.example.nmaazreminder.utils.setRoundedCorners
 import com.example.nmaazreminder.utils.toPx
 
@@ -41,16 +42,16 @@ class SettingsAdapter(
 
             // 2. Section Category Headers Handler
             if (item.categoryHeader != null) {
-                binding.tvCategoryHeader.visibility = android.view.View.VISIBLE
+                binding.tvCategoryHeader.visibility = View.VISIBLE
                 binding.tvCategoryHeader.text = item.categoryHeader
             } else {
-                binding.tvCategoryHeader.visibility = android.view.View.GONE
+                binding.tvCategoryHeader.visibility = View.GONE
             }
 
             // 3. Dynamic Action Elements Switcher (Chevron Arrow vs. SwitchCompat Toggle)
             if (item.isToggleable) {
-                binding.ivChevron.visibility = android.view.View.GONE
-                binding.switchSetting.visibility = android.view.View.VISIBLE
+                binding.ivChevron.visibility = View.GONE
+                binding.switchSetting.visibility = View.VISIBLE
 
                 // Clear state listener before forcing checkbox adjustments to prevent recursive triggers
                 binding.switchSetting.setOnCheckedChangeListener(null)
@@ -61,20 +62,20 @@ class SettingsAdapter(
                     onToggleChanged(item, isChecked)
                 }
             } else {
-                binding.switchSetting.visibility = android.view.View.GONE
-                binding.ivChevron.visibility = android.view.View.VISIBLE
+                binding.switchSetting.visibility = View.GONE
+                binding.ivChevron.visibility = View.VISIBLE
             }
 
-            // Global Click Listener: Moved outside the if/else block so ALL rows are clickable
-            binding.root.setOnClickListener {
+            // ✨ SWAPPED: Replaced standard click listener with our dynamic scale-down bounce click micro-interaction
+            binding.root.setBounceClickListener {
                 onItemClicked(item)
             }
 
             // 4. Group Card Divider Line Renderer
             if (item.isLastInGroup) {
-                binding.settingDivider.visibility = android.view.View.GONE
+                binding.settingDivider.visibility = View.GONE
             } else {
-                binding.settingDivider.visibility = android.view.View.VISIBLE
+                binding.settingDivider.visibility = View.VISIBLE
             }
 
             // 5. THE MAGIC DYNAMIC CARD BACKGROUND ROUNDING LOGIC

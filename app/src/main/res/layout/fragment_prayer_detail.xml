@@ -223,7 +223,7 @@
                                 android:layout_width="22dp"
                                 android:layout_height="22dp"
                                 android:layout_centerVertical="true"
-                                android:src="@drawable/ic_sound"
+                                android:src="@drawable/ic_speaker"
                                 app:tint="#0D3E31" />
 
                             <LinearLayout

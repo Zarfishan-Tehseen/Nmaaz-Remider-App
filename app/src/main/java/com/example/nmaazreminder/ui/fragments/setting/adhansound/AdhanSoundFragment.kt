@@ -1,38 +1,36 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.adhansound
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels // 🌟 Required Import
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.nmaazreminder.ui.fragments.setting.AdhanSoundItem
+import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentAdhanSoundBinding
-import com.example.nmaazreminder.ui.fragments.setting.AdhanSoundAdapter
+import com.example.nmaazreminder.ui.viewmodel.PrayerDetailViewModel
+import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
 
-class AdhanSoundFragment : Fragment() {
+@AndroidEntryPoint
+class AdhanSoundFragment : Fragment(R.layout.fragment_adhan_sound) {
 
     private var _binding: FragmentAdhanSoundBinding? = null
     private val binding get() = _binding!!
-    private lateinit var soundAdapter: AdhanSoundAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAdhanSoundBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    // 🎯 ALIGNMENT FIX: Share the exact same viewmodel instance using your NavGraph ID
+    private val viewModel: PrayerDetailViewModel by activityViewModels()
+    private lateinit var soundAdapter: AdhanSoundAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentAdhanSoundBinding.bind(view)
 
         binding.btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            findNavController().navigateUp()
         }
 
-        // 1. Prepare raw collection objects data mapping profiles array metrics matching design
         val soundsList = listOf(
             AdhanSoundItem(1, "Makkah Adhan", "Sheikh Ali Mullah · 3:48"),
             AdhanSoundItem(2, "Madinah Adhan", "Sheikh Abdul Majid · 3:22"),
@@ -43,26 +41,25 @@ class AdhanSoundFragment : Fragment() {
             AdhanSoundItem(7, "Silent (Vibrate)", "No sound", isSilentOption = true)
         )
 
-        // 2. Map structural components elements parameters binding views directly layout sets
         binding.rvAdhanSounds.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initializing with index 2 ("Egyptian Adhan") selected by default matching your picture template choice wrapper card
-        soundAdapter = AdhanSoundAdapter(soundsList, selectedPosition = 2) { trackItem, isPlaying ->
+        // Initializing index based on currently saved database state safely
+        val currentSavedSound = viewModel.settings.value?.soundName ?: "Madinah Adhan"
+        val initialIndex = soundsList.indexOfFirst { it.title == currentSavedSound }.coerceAtLeast(0)
+
+        soundAdapter = AdhanSoundAdapter(soundsList, selectedPosition = initialIndex) { trackItem, isPlaying ->
             if (isPlaying) {
-                // TODO: Initialize your MediaPlayer asset instances to start audio preview tracks metrics streams here
                 Toast.makeText(requireContext(), "Playing preview: ${trackItem.title}", Toast.LENGTH_SHORT).show()
-            } else {
-                // TODO: Stop sound player instances elements safely logic pipelines tracking loop systems
             }
         }
         binding.rvAdhanSounds.adapter = soundAdapter
 
-        // 3. Persistent operational processing event save trigger button actions
+        // 🎯 ALIGNMENT FIX: Save selected sound track down into Room via ViewModel directly
         binding.btnSaveSelection.setOnClickListener {
             val selectedTrack = soundAdapter.getSelectedTrack()
-            // TODO: Persist configuration preferences data blocks locally via SharedPreferences/DataStore frameworks
+            viewModel.updateSound(selectedTrack.title) // Fires update query immediately!
             Toast.makeText(requireContext(), "Saved setting: ${selectedTrack.title}", Toast.LENGTH_SHORT).show()
-            parentFragmentManager.popBackStack()
+            findNavController().navigateUp()
         }
     }
 

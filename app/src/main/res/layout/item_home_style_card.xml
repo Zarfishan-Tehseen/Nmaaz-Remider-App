@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <RelativeLayout
+        android:id="@+id/layout_inner_container"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:paddingHorizontal="16dp">
+
+        <FrameLayout
+            android:id="@+id/layout_image_wrapper"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_rounded_bell_tint" />
+
+            <ImageView
+                android:id="@+id/iv_style_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                tools:src="@drawable/ic_home_style" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/iv_check_indicator"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check_circle"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/layout_image_wrapper"
+            android:layout_toStartOf="@id/iv_check_indicator"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_style_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#111111"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="List" />
+
+            <TextView
+                android:id="@+id/tv_style_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#7A7A7A"
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"
+                tools:text="Hero countdown card with prayer list below" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

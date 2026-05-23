@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.settings
+package com.example.nmaazreminder.ui.fragments.setting
 
 data class SettingItem(
     val id: Int,

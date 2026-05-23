@@ -1,10 +1,13 @@
 package com.example.nmaazreminder.ui.fragments.home
 
+import android.Manifest
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels // 🌟 Changed to activityViewModels for shared scope
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -13,8 +16,6 @@ import com.batoulapps.adhan.Prayer
 import com.batoulapps.adhan.PrayerTimes
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentHomeBinding
-import com.example.nmaazreminder.ui.fragments.home.PrayerAdapter
-import com.example.nmaazreminder.ui.fragments.home.PrayerItem
 import com.example.nmaazreminder.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,9 +29,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by viewModels()
+    // 🌟 Scoped as activityViewModels so it shares the exact same lifecycle state context as the Activity
+    private val viewModel: MainViewModel by activityViewModels()
     private var countDownTimer: CountDownTimer? = null
     private lateinit var prayerAdapter: PrayerAdapter
+
+    // 🌟 Runtime Permission Launcher Contract
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            // Permission approved! Invoke the full coordinates-to-alarm logic chain inside the ViewModel
+            viewModel.fetchAndSaveCurrentLocation()
+            Toast.makeText(requireContext(), "Fetching your location details...", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Location permission denied. Please select your location manually.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +60,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         // 🔄 Navigate ONLY when clicking on the RecyclerView list rows
         prayerAdapter = PrayerAdapter { clickedPrayer ->
-
             if (clickedPrayer.name.equals("Sunrise", ignoreCase = true)) {
                 // Do absolutely nothing — this makes it unclickable!
                 return@PrayerAdapter
@@ -47,12 +68,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val bundle = Bundle().apply {
                 putParcelable("selectedPrayer", clickedPrayer)
             }
-            // Direct ID navigation using destination ID instead of action
             findNavController().navigate(R.id.prayerDetailFragment, bundle)
         }
+
+        // Manual layout selection click navigation target
         binding.layoutLocationSelector.setOnClickListener {
             findNavController().navigate(R.id.locationSelectorFragment)
         }
+
+        // 🌟 Optional/Recommended UI Component Hook:
+        // If your XML layout contains an explicit automatic sync button icon (e.g., btn_gps_sync),
+        // hook up the runtime permission logic checker to it like this:
+        /*
+        binding.btnGpsSync.setOnClickListener {
+            checkAndRequestLocationPermissions()
+        }
+        */
 
         binding.rvPrayerList.adapter = prayerAdapter
         binding.tvCalendarGregorian.text = viewModel.currentDateString
@@ -70,6 +101,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         }
+    }
+
+    /**
+     * Helper to trigger the official system-controlled runtime location dialog window box
+     */
+    private fun checkAndRequestLocationPermissions() {
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 
     private fun updatePrayerUI(times: PrayerTimes) {
@@ -90,8 +133,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.tvNextPrayerTitle.text = englishName
         binding.tvNextPrayerArabic.text = arabicName
         binding.tvNextPrayerTime.text = timeFormatter.format(nextPrayerTime)
-
-        // 🛑 (Card click listener logic completely removed from here)
 
         val currentTimeMs = System.currentTimeMillis()
         var targetTimeMs = nextPrayerTime.time
@@ -126,9 +167,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val minutes = (millisUntilFinished / (1000 * 60)) % 60
                 val seconds = (millisUntilFinished / 1000) % 60
 
-                binding.tvCountdownHours.text = String.Companion.format(Locale.getDefault(), "%02d", hours)
-                binding.tvCountdownMinutes.text = String.Companion.format(Locale.getDefault(), "%02d", minutes)
-                binding.tvCountdownSeconds.text = String.Companion.format(Locale.getDefault(), "%02d", seconds)
+                binding.tvCountdownHours.text = String.format(Locale.getDefault(), "%02d", hours)
+                binding.tvCountdownMinutes.text = String.format(Locale.getDefault(), "%02d", minutes)
+                binding.tvCountdownSeconds.text = String.format(Locale.getDefault(), "%02d", seconds)
             }
 
             override fun onFinish() {

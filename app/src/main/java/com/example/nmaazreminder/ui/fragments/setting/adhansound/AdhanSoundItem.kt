@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.adhansound
 
 data class AdhanSoundItem(
     val id: Int,

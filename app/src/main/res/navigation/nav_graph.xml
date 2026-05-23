@@ -36,31 +36,49 @@
 
     <fragment
         android:id="@+id/locationSelectorFragment"
-        android:name="com.example.nmaazreminder.ui.fragments.home.LocationSelectorFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.location.LocationSelectorFragment"
         android:label="LocationSelectorFragment"
         tools:layout="@layout/fragment_location_selector" />
 
     <fragment
         android:id="@+id/nav_calcmethod"
-        android:name="com.example.nmaazreminder.ui.fragments.setting.CalculationMethodFragment"
-        android:label="Settings"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.method.CalculationMethodFragment"
+        android:label="Calculation_method"
         tools:layout="@layout/fragment_calculation_method" />
 
     <fragment
         android:id="@+id/nav_madhab"
-        android:name="com.example.nmaazreminder.ui.fragments.setting.MadhabSelectorFragment"
-        android:label="Settings"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.madhab.MadhabSelectorFragment"
+        android:label="Madhab_selector"
         tools:layout="@layout/fragment_madhab_selector" />
     <fragment
             android:id="@+id/nav_notifications"
-            android:name="com.example.nmaazreminder.ui.fragments.setting.NotificationSettingsFragment"
-            android:label="Settings"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.notifications.NotificationSettingsFragment"
+            android:label="Notification_settings"
             tools:layout="@layout/fragment_notification_settings" />
 
     <fragment
             android:id="@+id/nav_adhan_sound"
-            android:name="com.example.nmaazreminder.ui.fragments.setting.AdhanSoundFragment"
-            android:label="Settings"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.adhansound.AdhanSoundFragment"
+            android:label="Adhan_Sound"
             tools:layout="@layout/fragment_adhan_sound" />
+
+    <fragment
+            android:id="@+id/nav_language"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.language.LanguageFragment"
+            android:label="Language"
+            tools:layout="@layout/fragment_language" />
+
+    <fragment
+            android:id="@+id/nav_home_style"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.homestyle.HomeStyleFragment"
+            android:label="Home_style"
+            tools:layout="@layout/fragment_home_style" />
+
+    <fragment
+            android:id="@+id/nav_pre_alarm"
+            android:name="com.example.nmaazreminder.ui.fragments.setting.pre_alarm.PreAlarmFragment"
+            android:label="Pre-Alarm"
+            tools:layout="@layout/fragment_pre_alarm" />
 
 </navigation>

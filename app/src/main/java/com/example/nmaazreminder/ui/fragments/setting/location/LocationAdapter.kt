@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments.home
+package com.example.nmaazreminder.ui.fragments.setting.location
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.databinding.ItemLocationRowBinding
-import com.example.nmaazreminder.ui.fragments.home.LocationItem
+import com.example.nmaazreminder.utils.setBounceClickListener
 
 class LocationAdapter(
     private val onLocationClicked: (LocationItem) -> Unit
@@ -34,8 +34,8 @@ class LocationAdapter(
             binding.tvCityName.text = item.cityName
             binding.tvCountryName.text = item.countryName
 
-            // Triggers a click callback passing the full data item back upward
-            binding.root.setOnClickListener {
+            // ✨ SWAPPED: Applied the premium scale-down bounce click effect here
+            binding.root.setBounceClickListener {
                 onLocationClicked(item)
             }
         }

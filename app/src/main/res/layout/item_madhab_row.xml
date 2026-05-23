@@ -8,19 +8,18 @@
     android:background="?attr/selectableItemBackground"
     android:padding="16dp">
 
-    <RadioButton
-        android:id="@+id/radio_button"
+    <ImageView
+        android:id="@+id/ivRadioIndicator"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_alignParentStart="true"
-        android:clickable="false"
-        android:focusable="false"
-        android:buttonTint="#163A26" />
+        android:layout_gravity="center"
+        android:src="@drawable/ic_radio_unselected"
+        android:contentDescription="Selection Indicator" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/radio_button"
+        android:layout_toEndOf="@id/ivRadioIndicator"
         android:layout_marginStart="16dp"
         android:orientation="vertical">
 

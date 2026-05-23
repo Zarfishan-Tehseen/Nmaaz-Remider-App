@@ -2,6 +2,7 @@ package com.example.nmaazreminder.ui.fragments.home
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -15,10 +16,11 @@ import androidx.transition.TransitionManager
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentPrayerDetailBinding
 import com.example.nmaazreminder.ui.fragments.home.PrayerItem
-import com.example.nmaazreminder.ui.prayerdetail.PrayerDetailViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.example.nmaazreminder.ui.viewmodel.PrayerDetailViewModel
+import com.example.nmaazreminder.utils.setBounceClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import androidx.fragment.app.activityViewModels
 
 @AndroidEntryPoint
 class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
@@ -26,7 +28,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
     private var _binding: FragmentPrayerDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: PrayerDetailViewModel by viewModels()
+    private val viewModel: PrayerDetailViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,11 +45,12 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
             viewModel.loadSettings(prayer.name)
         }
 
-        binding.btnBack.setOnClickListener {
+        // Back button with premium bounce interaction
+        binding.btnBack.setBounceClickListener {
             findNavController().navigateUp()
         }
 
-        // 🚀 STEP 1: Define your listener ONCE here, completely outside the collector loop
+        // STEP 1: Define your listener ONCE here, completely outside the collector loop
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
             TransitionManager.beginDelayedTransition(
                 binding.layoutSubSettings.parent as ViewGroup,
@@ -62,16 +65,20 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
             viewModel.updateNotification(isChecked)
         }
 
-        // Connect Item Pickers Click Observers
-        binding.btnSelectSound.setOnClickListener { showSoundPicker() }
-        binding.btnPreAlarm.setOnClickListener { showOffsetPicker() }
+        // Connect Item Pickers with bounce click effects and raw destination IDs
+        binding.btnSelectSound.setBounceClickListener {
+            navigateToSoundPicker()
+        }
+        binding.btnPreAlarm.setBounceClickListener {
+            navigateToOffsetPicker()
+        }
 
-        // 🚀 STEP 2: Collect database changes reactively and ONLY update values
+        // STEP 2: Collect database changes reactively and ONLY update values
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.settings.collect { setting ->
                     setting?.let {
-                        // 🎯 Temporarily clear listener ONLY to set the state without triggering loop updates
+                        // Temporarily clear listener ONLY to set the state without triggering loop updates
                         binding.switchNotification.setOnCheckedChangeListener(null)
 
                         binding.switchNotification.isChecked = it.isEnabled
@@ -85,7 +92,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
                         binding.layoutSubSettings.visibility = if (it.isEnabled) View.VISIBLE else View.GONE
                         binding.tvNotificationStatus.text = if (it.isEnabled) "On — you will be alerted" else "Off — muted"
 
-                        // 🎯 Safely re-apply your permanent switch listener logic
+                        // Safely re-apply your permanent switch listener logic
                         rebindSwitchListener()
                     }
                 }
@@ -93,7 +100,7 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
         }
     }
 
-    // 🚀 STEP 3: Helper function to re-link your permanent action callback cleanly
+    // STEP 3: Helper function to re-link your permanent action callback cleanly
     private fun rebindSwitchListener() {
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
             TransitionManager.beginDelayedTransition(
@@ -107,26 +114,13 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
         }
     }
 
-    private fun showSoundPicker() {
-        val sounds = arrayOf("Madinah Adhan", "Makkah Adhan", "Al-Aqsa Adhan", "Soft Chime", "None")
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select Notification Sound")
-            .setItems(sounds) { _, which ->
-                viewModel.updateSound(sounds[which])
-            }
-            .show()
+    // Navigating directly using your destination fragment IDs from nav_graph.xml
+    private fun navigateToSoundPicker() {
+        findNavController().navigate(R.id.nav_adhan_sound)
     }
 
-    private fun showOffsetPicker() {
-        val options = arrayOf("At time", "5 min before", "10 min before", "15 min before")
-        val values = intArrayOf(0, 5, 10, 15)
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Select Reminder Offset")
-            .setItems(options) { _, which ->
-                viewModel.updateOffset(values[which])
-            }
-            .show()
+    private fun navigateToOffsetPicker() {
+        findNavController().navigate(R.id.nav_pre_alarm)
     }
 
     private fun setupDynamicTheme(prayerName: String) {

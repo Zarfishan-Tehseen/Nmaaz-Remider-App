@@ -1,10 +1,10 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.notifications
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nmaazreminder.databinding.ItemPrayerNotificationCardBinding
-import com.example.nmaazreminder.ui.fragments.setting.PrayerNotificationItem
+import com.example.nmaazreminder.utils.setBounceClickListener
 
 class PrayerNotificationAdapter(
     private val dataset: List<PrayerNotificationItem>,
@@ -29,7 +29,8 @@ class PrayerNotificationAdapter(
             tvNotificationStatus.text = item.statusText
             ivPrayerConditionIcon.setImageResource(item.iconDrawableId)
 
-            rootCardLayout.setOnClickListener {
+            // ✨ SWAPPED: Added the fluid scale-down bounce click micro-interaction on card click
+            rootCardLayout.setBounceClickListener {
                 onCardClicked(item)
             }
         }

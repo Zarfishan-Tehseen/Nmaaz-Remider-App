@@ -1,4 +1,4 @@
-package com.example.nmaazreminder.ui.fragments.setting
+package com.example.nmaazreminder.ui.fragments.setting.notifications
 
 data class PrayerNotificationItem(
     val name: String,
