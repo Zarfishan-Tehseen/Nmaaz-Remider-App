@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels // 🌟 Changed to activityViewModels for shared scope
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,6 +16,7 @@ import com.batoulapps.adhan.Prayer
 import com.batoulapps.adhan.PrayerTimes
 import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentHomeBinding
+import com.example.nmaazreminder.ui.fragments.home.choosedate.ChooseDateBottomSheetFragment
 import com.example.nmaazreminder.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,12 +30,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    // 🌟 Scoped as activityViewModels so it shares the exact same lifecycle state context as the Activity
     private val viewModel: MainViewModel by activityViewModels()
     private var countDownTimer: CountDownTimer? = null
     private lateinit var prayerAdapter: PrayerAdapter
 
-    // 🌟 Runtime Permission Launcher Contract
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -42,7 +41,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
         if (fineLocationGranted || coarseLocationGranted) {
-            // Permission approved! Invoke the full coordinates-to-alarm logic chain inside the ViewModel
             viewModel.fetchAndSaveCurrentLocation()
             Toast.makeText(requireContext(), "Fetching your location details...", Toast.LENGTH_SHORT).show()
         } else {
@@ -58,42 +56,54 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeBinding.bind(view)
 
-        // 🔄 Navigate ONLY when clicking on the RecyclerView list rows
         prayerAdapter = PrayerAdapter { clickedPrayer ->
             if (clickedPrayer.name.equals("Sunrise", ignoreCase = true)) {
-                // Do absolutely nothing — this makes it unclickable!
                 return@PrayerAdapter
             }
-
             val bundle = Bundle().apply {
                 putParcelable("selectedPrayer", clickedPrayer)
             }
             findNavController().navigate(R.id.prayerDetailFragment, bundle)
         }
 
-        // Manual layout selection click navigation target
+        binding.rvPrayerList.adapter = prayerAdapter
         binding.layoutLocationSelector.setOnClickListener {
             findNavController().navigate(R.id.locationSelectorFragment)
         }
 
-        // 🌟 Optional/Recommended UI Component Hook:
-        // If your XML layout contains an explicit automatic sync button icon (e.g., btn_gps_sync),
-        // hook up the runtime permission logic checker to it like this:
-        /*
-        binding.btnGpsSync.setOnClickListener {
-            checkAndRequestLocationPermissions()
+        val onDateTextClickListener = View.OnClickListener {
+            val chooseDateSheet = ChooseDateBottomSheetFragment()
+            chooseDateSheet.show(childFragmentManager, "ChooseDateBottomSheet")
         }
-        */
+        binding.tvCalendarGregorian.setOnClickListener(onDateTextClickListener)
+        binding.tvCalendarHijri.setOnClickListener(onDateTextClickListener) // Optional binding anchor
 
-        binding.rvPrayerList.adapter = prayerAdapter
-        binding.tvCalendarGregorian.text = viewModel.currentDateString
+        // Moves the calculation state backwards by exactly 1 day
+        binding.btnDatePrev.setOnClickListener {
+            viewModel.shiftDateByDays(-1)
+        }
 
+        // Moves the calculation state forwards by exactly 1 day
+        binding.btnDateNext.setOnClickListener {
+            viewModel.shiftDateByDays(1)
+        }
+
+        // Snap resets application context target timestamp baseline back to today
+        binding.btnDateToday.setOnClickListener {
+            viewModel.resetToToday()
+        }
+
+        // State collection pipe
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.prayerState.collect { dataPair ->
                     if (dataPair != null) {
                         val (cityName, times) = dataPair
                         binding.tvCurrentLocation.text = cityName
+
+                        // Dynamic text assignment from structural state changes
+                        binding.tvCalendarGregorian.text = viewModel.currentDateString
+                        binding.tvCalendarHijri.text = viewModel.currentHijriDateString
 
                         updatePrayerUI(times)
                         submitPrayerList(times)
@@ -103,9 +113,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    /**
-     * Helper to trigger the official system-controlled runtime location dialog window box
-     */
     private fun checkAndRequestLocationPermissions() {
         locationPermissionLauncher.launch(
             arrayOf(

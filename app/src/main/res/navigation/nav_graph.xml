@@ -81,4 +81,10 @@
             android:label="Pre-Alarm"
             tools:layout="@layout/fragment_pre_alarm" />
 
+    <dialog
+        android:id="@+id/chooseDateBottomSheetFragment"
+        android:name="com.example.nmaazreminder.ui.fragments.home.choosedate.ChooseDateBottomSheetFragment"
+        android:label="fragment_choose_date"
+        style="?attr/bottomSheetDialogTheme" />
+
 </navigation>

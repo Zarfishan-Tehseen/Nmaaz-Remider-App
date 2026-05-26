@@ -29,7 +29,6 @@ class PrayerNotificationAdapter(
             tvNotificationStatus.text = item.statusText
             ivPrayerConditionIcon.setImageResource(item.iconDrawableId)
 
-            // ✨ SWAPPED: Added the fluid scale-down bounce click micro-interaction on card click
             rootCardLayout.setBounceClickListener {
                 onCardClicked(item)
             }

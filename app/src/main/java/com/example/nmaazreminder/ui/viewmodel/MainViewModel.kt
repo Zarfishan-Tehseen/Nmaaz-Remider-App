@@ -8,7 +8,9 @@ import com.example.nmaazreminder.data.repository.PrayerRepository
 import com.example.nmaazreminder.domain.usecase.GetPrayerTimesUseCase
 import com.example.nmaazreminder.utils.LocationFetcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.firstOrNull
@@ -25,7 +27,10 @@ class MainViewModel @Inject constructor(
     private val locationFetcher: LocationFetcher
 ) : ViewModel() {
 
-    // 🌟 Expose the raw database stream so our settings screen can observe selections live
+    // 🌟 1. BACKING CALENDAR TRACKER FOR DYNAMIC DATE SHIFTING
+    private val _selectedDate = MutableStateFlow(Calendar.getInstance())
+    val selectedDateState get() = _selectedDate
+
     val globalSettings = repository.streamPrayerSettings()
         .stateIn(
             scope = viewModelScope,
@@ -33,9 +38,12 @@ class MainViewModel @Inject constructor(
             initialValue = null
         )
 
-    val prayerState = repository.streamPrayerSettings().map { settings ->
+    // 🌟 2. COMBINED STATE FLOW
+    // Listens to database settings changes AND custom calendar shifting simultaneously
+    val prayerState = combine(repository.streamPrayerSettings(), _selectedDate) { settings, calendar ->
         if (settings != null) {
-            val times = getPrayerTimesUseCase.execute(settings)
+            // Modifying setting payload date arguments safely for specific date calculations
+            val times = getPrayerTimesUseCase.execute(settings, calendar.time)
             Pair(settings.cityName, times)
         } else {
             null
@@ -46,10 +54,34 @@ class MainViewModel @Inject constructor(
         initialValue = null
     )
 
+    // Dynamic label generator matching your exact UI mockup layout specifications
     val currentDateString: String
         get() {
-            val sdf = SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault())
-            return sdf.format(Date())
+            val sdf = SimpleDateFormat("EEEE, dd MMMM", Locale.getDefault())
+            return sdf.format(_selectedDate.value.time)
+        }
+
+    val currentHijriDateString: String
+        get() {
+            return try {
+                // Convert standard java.util.Calendar to java.time.LocalDate
+                val calendar = _selectedDate.value
+                val localDate = java.time.LocalDate.of(
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH) + 1, // Calendar months are 0-indexed
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+
+                // Convert Gregorian LocalDate to Hijri (Umm al-Qura) Calendar
+                val hijriDate = java.time.chrono.HijrahDate.from(localDate)
+
+                // Format the Hijri date dynamically (e.g., "5 Dhul-Hijjah 1447 AH")
+                val formatter = java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
+                formatter.format(hijriDate)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                "1 Dhul Hijjah 1447" // Safe fallback placeholder text if conversion fails
+            }
         }
 
     init {
@@ -67,25 +99,34 @@ class MainViewModel @Inject constructor(
                 )
                 repository.updatePrayerSettings(defaultSettings)
 
-                val defaultTimes = getPrayerTimesUseCase.execute(defaultSettings)
+                val defaultTimes = getPrayerTimesUseCase.execute(defaultSettings, Calendar.getInstance().time)
                 alarmScheduler.scheduleAlarms(defaultTimes)
             } else {
-                val times = getPrayerTimesUseCase.execute(currentSettings)
+                val times = getPrayerTimesUseCase.execute(currentSettings, Calendar.getInstance().time)
                 alarmScheduler.scheduleAlarms(times)
             }
         }
     }
 
-    /**
-     * Helper function to save updated configuration structural properties
-     * (Calculation methods, Madhab rules, etc.) directly into Room.
-     */
+    // 🌟 3. DATE NAVIGATION UTILITY API
+    fun updateSelectedDate(calendar: Calendar) {
+        _selectedDate.value = calendar
+    }
+
+    fun shiftDateByDays(days: Int) {
+        val currentCalendar = _selectedDate.value.clone() as Calendar
+        currentCalendar.add(Calendar.DAY_OF_MONTH, days)
+        _selectedDate.value = currentCalendar
+    }
+
+    fun resetToToday() {
+        _selectedDate.value = Calendar.getInstance()
+    }
+
     fun saveGlobalSettings(newSettings: PrayerSettings) {
         viewModelScope.launch {
             repository.updatePrayerSettings(newSettings)
-
-            // Re-sync background system alarms whenever structural formulas shift
-            val times = getPrayerTimesUseCase.execute(newSettings)
+            val times = getPrayerTimesUseCase.execute(newSettings, _selectedDate.value.time)
             alarmScheduler.scheduleAlarms(times)
         }
     }
@@ -103,7 +144,7 @@ class MainViewModel @Inject constructor(
 
                     val currentSettings = repository.streamPrayerSettings().firstOrNull()
                     if (currentSettings != null) {
-                        val updatedTimes = getPrayerTimesUseCase.execute(currentSettings)
+                        val updatedTimes = getPrayerTimesUseCase.execute(currentSettings, _selectedDate.value.time)
                         alarmScheduler.scheduleAlarms(updatedTimes)
                     }
                 }
@@ -119,7 +160,7 @@ class MainViewModel @Inject constructor(
 
             val currentSettings = repository.streamPrayerSettings().firstOrNull()
             if (currentSettings != null) {
-                val times = getPrayerTimesUseCase.execute(currentSettings)
+                val times = getPrayerTimesUseCase.execute(currentSettings, _selectedDate.value.time)
                 alarmScheduler.scheduleAlarms(times)
             }
         }
