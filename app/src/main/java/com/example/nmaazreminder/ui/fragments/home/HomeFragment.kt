@@ -60,10 +60,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             if (clickedPrayer.name.equals("Sunrise", ignoreCase = true)) {
                 return@PrayerAdapter
             }
+
             val bundle = Bundle().apply {
                 putParcelable("selectedPrayer", clickedPrayer)
             }
-            findNavController().navigate(R.id.prayerDetailFragment, bundle)
+
+            val bottomSheet = PrayerDetailBottomSheet().apply {
+                arguments = bundle
+            }
+            // Launch using parent manager for pristine window generation passes
+            bottomSheet.show(parentFragmentManager, "PrayerDetailBottomSheet")
         }
 
         binding.rvPrayerList.adapter = prayerAdapter

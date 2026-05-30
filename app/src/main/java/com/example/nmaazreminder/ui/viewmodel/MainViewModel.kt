@@ -62,6 +62,7 @@ class MainViewModel @Inject constructor(
         }
 
     val currentHijriDateString: String
+        @androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.O)
         get() {
             return try {
                 // Convert standard java.util.Calendar to java.time.LocalDate
@@ -162,6 +163,20 @@ class MainViewModel @Inject constructor(
             if (currentSettings != null) {
                 val times = getPrayerTimesUseCase.execute(currentSettings, _selectedDate.value.time)
                 alarmScheduler.scheduleAlarms(times)
+            }
+        }
+    }
+
+    fun toggleAllNotifications(isEnabled: Boolean) {
+        viewModelScope.launch {
+            // Read the current settings safely from the repository stream
+            repository.streamPrayerSettings().firstOrNull()?.let { currentSettings ->
+                // Create a copy with the updated master notification state
+                val updatedSettings = currentSettings.copy(
+                    isMasterNotificationEnabled = isEnabled
+                )
+                // Save it back to Room using your existing save method
+                saveGlobalSettings(updatedSettings)
             }
         }
     }

@@ -11,5 +11,6 @@ data class PrayerSettings(
     val longitude: Double = 0.0,
     val calculationMethod: Int = 0,
     val asrMethod: Int = 0,
-    val isDarkMode: Boolean = false
+    val isDarkMode: Boolean = false,
+    val isMasterNotificationEnabled: Boolean = true
 )

@@ -4,5 +4,6 @@ data class PrayerNotificationItem(
     val name: String,
     val arabicName: String,
     val statusText: String,
-    val iconDrawableId: Int
+    val iconDrawableId: Int,
+    val isEnabled: Boolean
 )
