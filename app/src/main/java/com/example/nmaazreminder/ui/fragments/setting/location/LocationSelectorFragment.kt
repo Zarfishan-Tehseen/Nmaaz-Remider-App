@@ -84,15 +84,21 @@ class LocationSelectorFragment : Fragment(R.layout.fragment_location_selector) {
     }
 
     private fun loadDefaultCities() {
-        // Precise geographic values for major cities in Pakistan
         val citiesList = listOf(
+            LocationItem("Islamabad", "Capital Territory, Pakistan", 33.6844, 73.0479),
             LocationItem("Karachi", "Sindh, Pakistan", 24.8607, 67.0011),
             LocationItem("Lahore", "Punjab, Pakistan", 31.5204, 74.3587),
-            LocationItem("Islamabad", "Capital Territory, Pakistan", 33.6844, 73.0479),
-            LocationItem("Faisalabad", "Punjab, Pakistan", 31.4504, 73.1350),
-            LocationItem("Rawalpindi", "Punjab, Pakistan", 33.5651, 73.0169),
-            LocationItem("Multan", "Punjab, Pakistan", 30.1575, 71.5249),
-            LocationItem("Sargodha", "Punjab, Pakistan", 32.0740, 72.6860)
+            LocationItem("Peshawar", "KPK, Pakistan", 34.0080, 71.5785),
+            LocationItem("Quetta", "Balochistan, Pakistan", 30.1833, 66.9965),
+            LocationItem("Sargodha", "Punjab, Pakistan", 32.0740, 72.6860),
+            LocationItem("Washington, D.C.", "America", 38.9072, -77.0369),
+            LocationItem("London", "United Kingdom", 51.5074, -0.1278),
+            LocationItem("Ottawa", "Ontario, Canada", 45.4215, 75.6972),
+            LocationItem("Sydney", "Australia", 33.8651, 151.2099),
+            LocationItem("Berlin", "Germany", 52.5200, 13.4050),
+            LocationItem("New Delhi", "India", 28.6448, 77.2167),
+            LocationItem("Tehran", "Iran", 35.7152,  51.4043),
+            LocationItem("Beijing", "China", 39.9166,  116.3833)
         )
 
         locationAdapter.submitList(citiesList)

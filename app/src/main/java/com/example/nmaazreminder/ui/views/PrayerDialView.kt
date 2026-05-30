@@ -1,12 +1,10 @@
 package com.example.nmaazreminder.ui.views
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import java.util.Calendar
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -16,102 +14,173 @@ class PrayerDialView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // Paint for the main tracking circle ring
-    private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#D4CFC3")
+    // 🎨 Paints Definition
+    private val dashedCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#C3C7C2")
         style = Paint.Style.STROKE
         strokeWidth = 3f
-        // Creates the clean dash/dotted pattern matching your mockup design
-        pathEffect = DashPathEffect(floatArrayOf(6f, 8f), 0f)
+        pathEffect = DashPathEffect(floatArrayOf(8f, 12f), 0f)
     }
 
-    // Paint for hour/minute dial tick dashes
-    private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#A0A39F")
+    private val innerTrackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#E0DCD3")
         style = Paint.Style.STROKE
         strokeWidth = 4f
     }
 
-    // Paint for the text labels (Fajr, Dhuhr, etc.)
+    private val activeArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#1E3A34") // Dark Green color matching reference
+        style = Paint.Style.STROKE
+        strokeWidth = 5f
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+    }
+
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#6E726E")
-        textSize = 34f // Adjust scale relative to target device density profile
         textAlign = Paint.Align.CENTER
     }
 
-    // Paint for the active prayer highlight accent indicator point
-    private val activeDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#CBB393")
-        style = Paint.Style.FILL
+    private val needlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#1E3A34")
+        style = Paint.Style.STROKE
+        strokeWidth = 6f
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    // Coordinates variables
+    private var centerX = 0f
+    private var centerY = 0f
+    private var outerRadius = 0f
+    private var innerRadius = 0f
+
+    // 🗺️ Mocking structural values for beautiful render framework configuration
+    private val prayerAngles = floatArrayOf(140f, 80f, 30f, -25f, -85f) // Fajr, Dhuhr, Asr, Maghrib, Isha angles
+    private val prayerNamesEnglish = arrayOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+    private val prayerNamesArabic = arrayOf("الفجر", "الظهر", "العصر", "المغرب", "العشاء")
+
+    private var activeIndex = 2 // Defaulting to ASR matching reference display
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        centerX = w / 2f
+        centerY = h / 2f
+
+        // Match exact bounds layout
+        outerRadius = (w.coerceAtMost(h) / 2f) * 0.82f
+        innerRadius = outerRadius * 0.86f
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val centerX = width / 2f
-        val centerY = height / 2f
-        // Leave a 60px margin buffer on sides to prevent text labels clipping off-screen
-        val radius = (Math.min(width, height) / 2f) - 60f
+        // 1. Draw the clean Outer Custom Ticks Ring
+        canvas.drawCircle(centerX, centerY, outerRadius, dashedCirclePaint)
 
-        // 1. Draw the underlying dashed tracking circle ring
-        canvas.drawCircle(centerX, centerY, radius, circlePaint)
+        // 2. Draw standard layout static Tick Markers along the outer ring
+        for (angle in 0 until 360 step 15) {
+            val rad = Math.toRadians(angle.toDouble())
+            val startX = centerX + (outerRadius - 8f) * cos(rad).toFloat()
+            val startY = centerY + (outerRadius - 8f) * sin(rad).toFloat()
+            val endX = centerX + (outerRadius + 8f) * cos(rad).toFloat()
+            val endY = centerY + (outerRadius + 8f) * sin(rad).toFloat()
 
-        // 2. Draw static ornamental clock tick marks (Every 30 degrees for layout structure)
-        for (angleDegrees in 0 until 360 step 30) {
-            val angleRadians = Math.toRadians(angleDegrees.toDouble())
-
-            // Outer point of the line segment intersecting the circle perimeter
-            val startX = (centerX + radius * cos(angleRadians)).toFloat()
-            val startY = (centerY + radius * sin(angleRadians)).toFloat()
-
-            // Inner point creating a small tick length variant
-            val endX = (centerX + (radius - 12f) * cos(angleRadians)).toFloat()
-            val endY = (centerY + (radius - 12f) * sin(angleRadians)).toFloat()
-
-            canvas.drawLine(startX, startY, endX, endY, tickPaint)
+            // Highlight explicit anchor nodes matching layout
+            if (angle % 90 == 0) {
+                dashedCirclePaint.strokeWidth = 5f
+                canvas.drawLine(startX, startY, endX, endY, dashedCirclePaint)
+                dashedCirclePaint.strokeWidth = 3f
+            } else {
+                canvas.drawLine(startX, startY, endX, endY, dashedCirclePaint)
+            }
         }
 
-        // 3. Optional visual placeholder dots for main prayer positions (e.g., 45, 120, 180, 270, 330 degrees)
-        // These can later be dynamically bound to times via custom functions
-        drawPrayerNode(canvas, centerX, centerY, radius, 140.0, "Fajr")
-        drawPrayerNode(canvas, centerX, centerY, radius, 260.0, "Dhuhr")
-        drawPrayerNode(canvas, centerX, centerY, radius, 330.0, "Asr", isActive = true)
-        drawPrayerNode(canvas, centerX, centerY, radius, 20.0, "Maghrib")
-        drawPrayerNode(canvas, centerX, centerY, radius, 70.0, "Isha")
+        // 3. Draw Inner base ring circle track
+        canvas.drawCircle(centerX, centerY, innerRadius, innerTrackPaint)
+
+        // 4. Draw Active Sweep Track (From current active baseline up to active prayer node)
+        val startSweepAngle = prayerAngles[0] // Starts from Fajr node boundary
+        val targetSweepAngle = prayerAngles[activeIndex]
+        val sweepDelta = if (targetSweepAngle < startSweepAngle) {
+            (targetSweepAngle - startSweepAngle)
+        } else {
+            (targetSweepAngle - startSweepAngle) - 360f
+        }
+
+        val arcBounds = RectF(centerX - innerRadius, centerY - innerRadius, centerX + innerRadius, centerY + innerRadius)
+        canvas.drawArc(arcBounds, startSweepAngle, sweepDelta, false, activeArcPaint)
+
+        // 5. Draw Pointers, Text Layout Elements, and dynamic state items
+        for (i in prayerAngles.indices) {
+            val angleRad = Math.toRadians(prayerAngles[i].toDouble())
+            val itemX = centerX + innerRadius * cos(angleRad).toFloat()
+            val itemY = centerY + innerRadius * sin(angleRad).toFloat()
+
+            // Text formatting configuration layout parameters
+            textPaint.textSize = 34f
+            textPaint.typeface = Typeface.create(Typeface.SERIF, Typeface.NORMAL)
+
+            if (i == activeIndex) {
+                dotPaint.color = Color.parseColor("#D4A373") // Golden highlight dot
+                textPaint.color = Color.parseColor("#D4A373")
+                canvas.drawCircle(itemX, itemY, 14f, dotPaint) // Highlighted ring outer dot
+            } else {
+                dotPaint.color = Color.parseColor("#1E3A34")
+                textPaint.color = Color.parseColor("#5A5E5A")
+                canvas.drawCircle(itemX, itemY, 10f, dotPaint)
+            }
+
+            // Draw Prayer Label Texts matching boundaries offset configuration
+            val textOffsetRadius = innerRadius + 45f
+            val labelX = centerX + textOffsetRadius * cos(angleRad).toFloat()
+            val labelY = centerY + textOffsetRadius * sin(angleRad).toFloat() + 10f
+            canvas.drawText(prayerNamesEnglish[i], labelX, labelY, textPaint)
+        }
+
+        // 🌟 6. DRAW NEEDLE (Perfect reference line drawing transformation)
+        val activeRad = Math.toRadians(prayerAngles[activeIndex].toDouble())
+        // Start needle slightly offset from the exact center point circle boundary
+        val needleStartX = centerX + 25f * cos(activeRad).toFloat()
+        val needleStartY = centerY + 25f * sin(activeRad).toFloat()
+        val needleEndX = centerX + (innerRadius - 10f) * cos(activeRad).toFloat()
+        val needleEndY = centerY + (innerRadius - 10f) * sin(activeRad).toFloat()
+        canvas.drawLine(needleStartX, needleStartY, needleEndX, needleEndY, needlePaint)
+
+        // 🌟 7. DRAW CENTER METADATA HUD BLOCK (TEXT INSIDE DIAL)
+        // Draw standard small pivot circle center connector node
+        dotPaint.color = Color.parseColor("#1E3A34")
+        canvas.drawCircle(centerX, centerY, 15f, dotPaint)
+
+        // "NEXT" Title marker text representation
+        textPaint.color = Color.parseColor("#A0A39F")
+        textPaint.textSize = 28f
+        textPaint.letterSpacing = 0.08f
+        textPaint.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+        canvas.drawText("NEXT", centerX, centerY - 65f, textPaint)
+
+        // Target Prayer Title English
+        textPaint.color = Color.parseColor("#1E3A34")
+        textPaint.textSize = 58f
+        textPaint.letterSpacing = 0.02f
+        textPaint.typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+        canvas.drawText(prayerNamesEnglish[activeIndex], centerX, centerY - 5f, textPaint)
+
+        // Target Prayer Title Arabic text
+        textPaint.color = Color.parseColor("#1E3A34")
+        textPaint.textSize = 48f
+        textPaint.letterSpacing = 0.0f
+        textPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        canvas.drawText(prayerNamesArabic[activeIndex], centerX, centerY + 60f, textPaint)
     }
 
-    /**
-     * Helper to compute structural coordinates and draw prayer labels and connection nodes onto the canvas
-     */
-    private fun drawPrayerNode(
-        canvas: Canvas,
-        cx: Float,
-        cy: Float,
-        radius: Float,
-        angleDegrees: Double,
-        label: String,
-        isActive: Boolean = false
-    ) {
-        val radians = Math.toRadians(angleDegrees)
-
-        // Node dot center coordinates intersecting the ring line perfectly
-        val dotX = (cx + radius * cos(radians)).toFloat()
-        val dotY = (cy + radius * sin(radians)).toFloat()
-
-        if (isActive) {
-            // Draw an highlighted ring for active state matching Asr selection mockup
-            canvas.drawCircle(dotX, dotY, 20f, activeDotPaint)
-            canvas.drawCircle(dotX, dotY, 8f, Paint().apply { color = Color.parseColor("#1E3A34"); isAntiAlias = true })
-        } else {
-            canvas.drawCircle(dotX, dotY, 10f, Paint().apply { color = Color.parseColor("#1E3A34"); isAntiAlias = true })
+    // Dynamic setter to control dial center focus values asynchronously from fragment tracking loops
+    fun setActivePrayer(prayerName: String) {
+        val mappedIndex = prayerNamesEnglish.indexOfFirst { it.equals(prayerName, ignoreCase = true) }
+        if (mappedIndex != -1) {
+            this.activeIndex = mappedIndex
+            invalidate() // Re-draw interface view container updates safely
         }
-
-        // Push text labels further out away from node circle slightly to make it readable
-        val textDistance = radius + 40f
-        val textX = (cx + textDistance * cos(radians)).toFloat()
-        val textY = (cy + textDistance * sin(radians)).toFloat() + 10f // Offset y font baseline variance
-
-        textPaint.color = if (isActive) Color.parseColor("#CBB393") else Color.parseColor("#6E726E")
-        canvas.drawText(label, textX, textY, textPaint)
     }
 }

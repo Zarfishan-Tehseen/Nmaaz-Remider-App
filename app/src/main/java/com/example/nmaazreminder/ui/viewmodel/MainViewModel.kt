@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.*
 
 @HiltViewModel
@@ -62,26 +64,36 @@ class MainViewModel @Inject constructor(
         }
 
     val currentHijriDateString: String
-        @androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.O)
         get() {
             return try {
-                // Convert standard java.util.Calendar to java.time.LocalDate
-                val calendar = _selectedDate.value
-                val localDate = java.time.LocalDate.of(
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH) + 1, // Calendar months are 0-indexed
-                    calendar.get(Calendar.DAY_OF_MONTH)
+                // 1. Get the current java.util.Calendar instance from state
+                val currentSelected = _selectedDate.value
+
+                // 2. Initialize Android ICU IslamicCalendar safely
+                val islamicCalendar = android.icu.util.IslamicCalendar.getInstance() as android.icu.util.IslamicCalendar
+
+                // Pass the time from java.util.Calendar directly using timeInMillis property
+                islamicCalendar.timeInMillis = currentSelected.timeInMillis
+
+                // 3. Extract accurate components explicitly using ICU constants directly
+                val hijriYear = islamicCalendar.get(android.icu.util.Calendar.YEAR)
+                val hijriMonth = islamicCalendar.get(android.icu.util.Calendar.MONTH)
+                val hijriDay = islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH)
+
+                // 4. Islamic Months representation mapping array
+                val islamicMonths = arrayOf(
+                    "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' ath-Thani",
+                    "Jumada al-Awwal", "Jumada ath-Thani", "Rajab", "Sha'ban",
+                    "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
                 )
 
-                // Convert Gregorian LocalDate to Hijri (Umm al-Qura) Calendar
-                val hijriDate = java.time.chrono.HijrahDate.from(localDate)
+                val monthName = islamicMonths.getOrElse(hijriMonth) { "Dhu al-Hijjah" }
 
-                // Format the Hijri date dynamically (e.g., "5 Dhul-Hijjah 1447 AH")
-                val formatter = java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
-                formatter.format(hijriDate)
+                // Return clean dynamic presentation
+                "$hijriDay $monthName $hijriYear AH"
             } catch (e: Exception) {
                 e.printStackTrace()
-                "1 Dhul Hijjah 1447" // Safe fallback placeholder text if conversion fails
+                "1 Dhu al-Hijjah 1447 AH"
             }
         }
 

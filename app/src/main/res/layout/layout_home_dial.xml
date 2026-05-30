@@ -39,9 +39,9 @@
         android:id="@+id/prayer_custom_dial_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="36dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="64dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toBottomOf="@id/layout_dial_header_labels"
         app:layout_constraintBottom_toTopOf="@id/card_dial_countdown"
@@ -53,17 +53,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@id/rv_prayer_list">
+        app:layout_constraintTop_toBottomOf="@id/prayer_custom_dial_view">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="24dp"
-            android:paddingVertical="18dp">
+            android:paddingVertical="14dp">
 
             <TextView
                 android:id="@+id/tv_dial_in_label"
@@ -83,7 +84,7 @@
                 android:fontFamily="@font/playfair_display"
                 android:text="01h 22m 58s"
                 android:textColor="#1E3A34"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/tv_dial_in_label"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -106,7 +107,7 @@
                 android:fontFamily="@font/playfair_display"
                 android:text="3:53 PM"
                 android:textColor="#1E3A34"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/tv_dial_at_label"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -118,9 +119,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:paddingHorizontal="16dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@id/layout_dial_footer"
+        android:paddingHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/card_dial_countdown"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -129,32 +130,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
-        android:layout_marginBottom="90dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="75dp"
+        app:layout_constraintTop_toBottomOf="@id/rv_prayer_list"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:id="@+id/layout_dial_location_display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_location"
-                app:tint="#6E726E" />
-            <TextView
-                android:id="@+id/tv_dial_bottom_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Islamabad"
-                android:textColor="#6E726E"
-                android:textSize="14sp" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -170,7 +149,9 @@
                 android:background="@drawable/bg_date_action"
                 android:src="@drawable/ic_chevron_left"
                 app:tint="#333333" />
+
             <View android:layout_width="8dp" android:layout_height="0dp"/>
+
             <ImageButton
                 android:id="@+id/btn_dial_date_next"
                 android:layout_width="36dp"

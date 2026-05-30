@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/row_container_column"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="2dp"
+    android:background="@drawable/bg_row_ripple"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/tv_prayer_name_english"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/playfair_display"
+        android:text="Maghrib"
+        android:textColor="#333333"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="none" />
+
+    <TextView
+        android:id="@+id/tv_prayer_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="7:09 PM"
+        android:textColor="#6E726E"
+        android:textSize="11sp"
+        android:fontFamily="@font/cinzel_decorative"
+        android:singleLine="true" />
+</LinearLayout>
