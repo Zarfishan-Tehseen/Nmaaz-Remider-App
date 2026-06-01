@@ -5,12 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "prayer_settings")
 data class PrayerSettings(
-    @PrimaryKey val id: Int = 0,
+    @PrimaryKey val id: Int = 1,
     val cityName: String = "Select Location",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val calculationMethod: Int = 0,
     val asrMethod: Int = 0,
     val isDarkMode: Boolean = false,
-    val isMasterNotificationEnabled: Boolean = true
+    val isMasterNotificationEnabled: Boolean = true,
+    val selectedHomeStyle: Int = 0
 )

@@ -20,6 +20,10 @@ class PrayerRepository @Inject constructor(
         settingsDao.updateLocation(name, lat, lon)
     }
 
+    suspend fun updateMasterNotification(isEnabled: Boolean) {
+        settingsDao.updateMasterNotification(isEnabled)
+    }
+
     // 1. Get settings for a specific prayer as a Flow
     fun getNotificationSetting(prayerName: String): Flow<PrayerNotification?> {
         return prayerDao.getSettingForPrayer(prayerName)
@@ -28,5 +32,13 @@ class PrayerRepository @Inject constructor(
     // 2. A generic update function
     suspend fun updateNotificationSetting(setting: PrayerNotification) {
         prayerDao.updatePrayerSetting(setting)
+    }
+
+    suspend fun updateAllPrayersEnabledStatus(isEnabled: Boolean) {
+        prayerDao.updateAllPrayersEnabledStatus(isEnabled)
+    }
+
+    fun getAllNotificationSettings(): Flow<List<PrayerNotification>> {
+        return prayerDao.getAllSettings()
     }
 }

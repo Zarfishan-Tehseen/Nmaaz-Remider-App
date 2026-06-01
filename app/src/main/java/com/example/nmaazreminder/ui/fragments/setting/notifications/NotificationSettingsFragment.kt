@@ -67,15 +67,35 @@ class NotificationSettingsFragment : Fragment() {
         }
 
         // Reactive State Observation Pipeline: Collects live settings changes from Room
+        // Reactive State Observation Pipeline: Merging Master status with Real Data entries
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // 🌟 Make sure 'globalSettings' or 'prayerNotificationsList' is open and public in MainViewModel
-                viewModel.globalSettings.collect { settings ->
-                    settings?.let {
-                        // For demonstration matching your manual dataset design pattern:
-                        val staticList = listOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+                // We use combine to listen to master toggle AND individual item changes together
+                kotlinx.coroutines.flow.combine(
+                    viewModel.globalSettings,
+                    viewModel.prayerNotificationsList
+                ) { settings, dbPrayers ->
+                    Pair(settings, dbPrayers)
+                }.collect { (settings, dbPrayers) ->
+                    if (settings != null && dbPrayers.isNotEmpty()) {
 
-                        val mappedList = staticList.map { prayerName ->
+                        // Map using real database properties instead of hardcoded static lists
+                        val mappedList = dbPrayers.map { dbPrayer ->
+                            val prayerName = dbPrayer.prayerName
+
+                            // Convert raw offset integer from database into clean UI display text
+                            val offsetText = when (dbPrayer.reminderOffset) {
+                                0 -> "on time"
+                                else -> "${dbPrayer.reminderOffset} min before"
+                            }
+
+                            val iconRes = when (prayerName.lowercase().trim()) {
+                                "fajr", "isha" -> R.drawable.ic_moon
+                                "dhuhr", "asr" -> R.drawable.ic_sun
+                                "maghrib" -> R.drawable.ic_cloud
+                                else -> R.drawable.ic_sun
+                            }
+
                             PrayerNotificationItem(
                                 name = prayerName,
                                 arabicName = when (prayerName.lowercase().trim()) {
@@ -86,21 +106,18 @@ class NotificationSettingsFragment : Fragment() {
                                     "isha" -> "العشاء"
                                     else -> ""
                                 },
-                                // Using fallbacks from your local settings schema dynamically
-                                statusText = if (settings.isMasterNotificationEnabled) "Adhan · Active" else "Muted",                                iconDrawableId = when (prayerName.lowercase().trim()) {
-                                    "fajr", "isha" -> R.drawable.ic_moon
-                                    "dhuhr", "asr" -> R.drawable.ic_sun
-                                    "maghrib" -> R.drawable.ic_cloud
-                                    else -> R.drawable.ic_sun
-                                },
-                                isEnabled = settings.isMasterNotificationEnabled
+                                adhanSoundName = dbPrayer.soundName, // 🎯 Real Sound from Database!
+                                offsetMinutesText = offsetText,       // 🎯 Real Offset from Database!
+                                iconDrawableId = iconRes,
+                                isMasterEnabled = settings.isMasterNotificationEnabled,
+                                isItemEnabled = dbPrayer.isEnabled
                             )
                         }
 
-                        // Submit the clean collection to the adapter
+                        // Submit clean dynamic list to adapter
                         notificationAdapter.submitList(mappedList)
 
-                        // Sync layout master state counter badges dynamically
+                        // Sync UI top status bars
                         binding.tvEnabledCounter.text = if (settings.isMasterNotificationEnabled) "5 of 5 enabled" else "0 of 5 enabled"
                         binding.switchMasterAdhan.isChecked = settings.isMasterNotificationEnabled
                     }

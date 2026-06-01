@@ -3,6 +3,7 @@ package com.example.nmaazreminder.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nmaazreminder.data.alarm.PrayerAlarmScheduler
+import com.example.nmaazreminder.data.local.PrayerNotification
 import com.example.nmaazreminder.data.local.PrayerSettings
 import com.example.nmaazreminder.data.repository.PrayerRepository
 import com.example.nmaazreminder.domain.usecase.GetPrayerTimesUseCase
@@ -40,15 +41,19 @@ class MainViewModel @Inject constructor(
             initialValue = null
         )
 
+    val prayerNotificationsList = repository.getAllNotificationSettings()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     // 🌟 2. COMBINED STATE FLOW
     // Listens to database settings changes AND custom calendar shifting simultaneously
     val prayerState = combine(repository.streamPrayerSettings(), _selectedDate) { settings, calendar ->
-        if (settings != null) {
-            // Modifying setting payload date arguments safely for specific date calculations
-            val times = getPrayerTimesUseCase.execute(settings, calendar.time)
-            Pair(settings.cityName, times)
-        } else {
-            null
+        settings?.let {
+            val times = getPrayerTimesUseCase.execute(it, calendar.time)
+            Pair(it.cityName, times)
         }
     }.stateIn(
         scope = viewModelScope,
@@ -118,6 +123,31 @@ class MainViewModel @Inject constructor(
                 val times = getPrayerTimesUseCase.execute(currentSettings, Calendar.getInstance().time)
                 alarmScheduler.scheduleAlarms(times)
             }
+
+            repository.getAllNotificationSettings().firstOrNull()?.let { currentList ->
+                if (currentList.size < 5) {
+                    val staticPrayers = listOf(
+                        PrayerNotification(prayerName = "Fajr", isEnabled = true, soundName = "Madinah Adhan", reminderOffset = 10),
+                        PrayerNotification(
+                            prayerName = "Dhuhr",
+                            isEnabled = true,
+                            soundName = "Makkah Adhan",
+                            reminderOffset = 5
+                        ),
+                        PrayerNotification(prayerName = "Asr", isEnabled = true, soundName = "Egyptian Adhan", reminderOffset = 5),
+                        PrayerNotification(prayerName = "Maghrib", isEnabled = true, soundName = "Makkah Adhan", reminderOffset = 0),
+                        PrayerNotification(prayerName = "Isha", isEnabled = true, soundName = "Silent (Vibrate)", reminderOffset = 15)
+                    )
+
+                    // Save missing items to Room natively using single inserts or loop mapping
+                    staticPrayers.forEach { defaultPrayer ->
+                        // Sirf wohi insert karega jo database mein pehle se nahi hai
+                        if (currentList.none { it.prayerName.equals(defaultPrayer.prayerName, ignoreCase = true) }) {
+                            repository.updateNotificationSetting(defaultPrayer)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -181,15 +211,11 @@ class MainViewModel @Inject constructor(
 
     fun toggleAllNotifications(isEnabled: Boolean) {
         viewModelScope.launch {
-            // Read the current settings safely from the repository stream
-            repository.streamPrayerSettings().firstOrNull()?.let { currentSettings ->
-                // Create a copy with the updated master notification state
-                val updatedSettings = currentSettings.copy(
-                    isMasterNotificationEnabled = isEnabled
-                )
-                // Save it back to Room using your existing save method
-                saveGlobalSettings(updatedSettings)
-            }
+            // 1. Update the master setting table row
+            repository.updateMasterNotification(isEnabled)
+
+            // 2. Update all individual prayer notification rows in the database to match this status
+            repository.updateAllPrayersEnabledStatus(isEnabled)
         }
     }
 }

@@ -13,4 +13,20 @@ interface PrayerDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updatePrayerSetting(settings: PrayerNotification)
+
+    @Query("UPDATE prayer_notifications SET isEnabled = :isEnabled")
+    suspend fun updateAllPrayersEnabledStatus(isEnabled: Boolean)
+
+    @Query("""
+    SELECT * FROM prayer_notifications 
+    ORDER BY CASE prayerName
+        WHEN 'Fajr' THEN 1
+        WHEN 'Dhuhr' THEN 2
+        WHEN 'Asr' THEN 3
+        WHEN 'Maghrib' THEN 4
+        WHEN 'Isha' THEN 5
+        ELSE 6 
+    END ASC
+""")
+    fun getAllSettings(): Flow<List<PrayerNotification>>
 }

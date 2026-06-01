@@ -16,4 +16,7 @@ interface SettingsDao {
 
     @Query("UPDATE prayer_settings SET cityName = :name, latitude = :lat, longitude = :lon WHERE id = 1")
     suspend fun updateLocation(name: String, lat: Double, lon: Double)
+
+    @Query("UPDATE prayer_settings SET isMasterNotificationEnabled = :isEnabled WHERE id = 1")
+    suspend fun updateMasterNotification(isEnabled: Boolean)
 }

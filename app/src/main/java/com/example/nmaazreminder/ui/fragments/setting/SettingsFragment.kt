@@ -109,6 +109,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         val madhabSubtitle = if (settings.asrMethod == 1) "Hanafi" else "Shafi / Maliki / Hanbali"
 
+        val homeStyleSubtitle = when (settings.selectedHomeStyle) {
+            0 -> "List"
+            1 -> "Dial"
+            2 -> "Arch"
+            else -> "List"
+        }
         settingsList.addAll(
             listOf(
                 // --- Group 1: Prayer Calculation ---
@@ -124,7 +130,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 SettingItem(7, "Dark theme", "System default theme config", R.drawable.ic_sun_cloud_accent, categoryHeader = "APPEARANCE", isToggleable = true, isChecked = false),
                 SettingItem(8, "Language", "English + Arabic", R.drawable.ic_global),
                 SettingItem(9, "Show Arabic prayer names", "...", R.drawable.ic_allah, isToggleable = true, isChecked = true),
-                SettingItem(10, "Home screen style", "List", R.drawable.ic_home_style, isLastInGroup = true),
+                SettingItem(10, "Home screen style", homeStyleSubtitle, R.drawable.ic_home_style, isLastInGroup = true),
 
                 // --- Group 4: About ---
                 SettingItem(11, "Rate Sakinah", "Rate us on Play Store", R.drawable.ic_star, categoryHeader = "ABOUT"),

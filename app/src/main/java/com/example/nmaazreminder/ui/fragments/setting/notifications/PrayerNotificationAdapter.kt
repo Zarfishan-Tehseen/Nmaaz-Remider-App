@@ -20,11 +20,26 @@ class PrayerNotificationAdapter(
                 // 🌟 Using your exact naming schema properties here
                 tvPrayerName.text = item.name
                 tvPrayerArabic.text = item.arabicName
-                tvNotificationStatus.text = item.statusText
+                //tvNotificationStatus.text = item.statusText
                 ivPrayerConditionIcon.setImageResource(item.iconDrawableId)
 
+                if (!item.isMasterEnabled) {
+                    // Scenario 1: Agar poora master switch hi band hai -> Everything is forced Muted
+                    tvNotificationStatus.text = "Muted"
+                    rootCardLayout.alpha = 0.5f
+                } else if (!item.isItemEnabled) {
+                    // Scenario 2: Master ON hai par user ne bottom sheet se is specific namaz ko off kiya hai
+                    tvNotificationStatus.text = "Disabled"
+                    rootCardLayout.alpha = 0.5f
+                } else {
+                    // Scenario 3: Master bhi ON hai aur namaz bhi active hai -> Show real details!
+                    tvNotificationStatus.text = "${item.adhanSoundName} · ${item.offsetMinutesText}"
+                    rootCardLayout.alpha = 1.0f
+                }
+
                 // Optional: Visually dim the row card slightly if it is disabled/muted
-                rootCardLayout.alpha = if (item.isEnabled) 1.0f else 0.5f
+                rootCardLayout.alpha = if (item.isMasterEnabled) 1.0f else 0.5f
+                rootCardLayout.alpha = if (item.isItemEnabled) 1.0f else 0.5f
 
                 rootCardLayout.setBounceClickListener {
                     onCardClicked(item)
