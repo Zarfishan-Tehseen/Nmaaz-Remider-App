@@ -41,4 +41,9 @@ class PrayerRepository @Inject constructor(
     fun getAllNotificationSettings(): Flow<List<PrayerNotification>> {
         return prayerDao.getAllSettings()
     }
+    suspend fun updateSoundForSpecificPrayer(prayer: String, sound: String) =
+        prayerDao.updateSoundForSpecificPrayer(prayer, sound)
+
+    suspend fun updateSoundForAllPrayers(sound: String) =
+        prayerDao.updateSoundForAllPrayers(sound)
 }

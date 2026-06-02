@@ -11,7 +11,11 @@ import com.example.nmaazreminder.R
 import com.example.nmaazreminder.databinding.FragmentAdhanSoundBinding
 import com.example.nmaazreminder.ui.viewmodel.PrayerDetailViewModel
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AdhanSoundFragment : Fragment(R.layout.fragment_adhan_sound) {
@@ -26,6 +30,15 @@ class AdhanSoundFragment : Fragment(R.layout.fragment_adhan_sound) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdhanSoundBinding.bind(view)
+
+        val targetPrayer = arguments?.getString("prayerName") ?: "Global"
+        viewModel.loadSettings(targetPrayer)
+
+        if (targetPrayer == "Global") {
+            binding.tvSubtitle.text = "For all prayers"
+        } else {
+            binding.tvSubtitle.text = "For $targetPrayer prayer"
+        }
 
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -43,22 +56,33 @@ class AdhanSoundFragment : Fragment(R.layout.fragment_adhan_sound) {
 
         binding.rvAdhanSounds.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initializing index based on currently saved database state safely
-        val currentSavedSound = viewModel.settings.value?.soundName ?: "Madinah Adhan"
-        val initialIndex = soundsList.indexOfFirst { it.title == currentSavedSound }.coerceAtLeast(0)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentAdhanSound.collect { currentSavedSound ->
+                    val initialIndex = soundsList.indexOfFirst { it.title == currentSavedSound }.coerceAtLeast(0)
 
-        soundAdapter = AdhanSoundAdapter(soundsList, selectedPosition = initialIndex) { trackItem, isPlaying ->
-            if (isPlaying) {
-                Toast.makeText(requireContext(), "Playing preview: ${trackItem.title}", Toast.LENGTH_SHORT).show()
+                    soundAdapter = AdhanSoundAdapter(soundsList, selectedPosition = initialIndex) { trackItem, isPlaying ->
+                        if (isPlaying) {
+                            Toast.makeText(requireContext(), "Playing preview: ${trackItem.title}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    binding.rvAdhanSounds.adapter = soundAdapter
+                }
             }
         }
-        binding.rvAdhanSounds.adapter = soundAdapter
 
-        // 🎯 ALIGNMENT FIX: Save selected sound track down into Room via ViewModel directly
+        //  ALIGNMENT FIX: Save selected sound track down into Room via ViewModel directly
         binding.btnSaveSelection.setOnClickListener {
             val selectedTrack = soundAdapter.getSelectedTrack()
-            viewModel.updateSound(selectedTrack.title) // Fires update query immediately!
-            Toast.makeText(requireContext(), "Saved setting: ${selectedTrack.title}", Toast.LENGTH_SHORT).show()
+
+            if (targetPrayer == "Global") {
+                viewModel.updateSoundForAllPrayers(selectedTrack.title)
+                Toast.makeText(requireContext(), "Saved default sound for all prayers", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.updateSoundForSpecificPrayer(targetPrayer, selectedTrack.title)
+                Toast.makeText(requireContext(), "Saved sound for $targetPrayer", Toast.LENGTH_SHORT).show()
+            }
+
             findNavController().navigateUp()
         }
     }

@@ -81,7 +81,12 @@ class PrayerDetailBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.btnSelectSound.setBounceClickListener {
-            findNavController().navigate(R.id.nav_adhan_sound)
+            val currentPrayerName = viewModel.settings.value?.prayerName ?: "Fajr"
+
+            val bundle = Bundle().apply {
+                putString("prayerName", currentPrayerName)
+            }
+            findNavController().navigate(R.id.nav_adhan_sound, bundle)
             dismiss()
         }
         binding.btnPreAlarm.setBounceClickListener {

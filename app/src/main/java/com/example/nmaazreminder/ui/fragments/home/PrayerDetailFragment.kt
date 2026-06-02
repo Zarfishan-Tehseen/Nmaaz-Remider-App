@@ -121,7 +121,13 @@ class PrayerDetailFragment : Fragment(R.layout.fragment_prayer_detail) {
         }
     }
 
-    private fun navigateToSoundPicker() { findNavController().navigate(R.id.nav_adhan_sound) }
+    private fun navigateToSoundPicker() {
+        val currentPrayerName = viewModel.settings.value?.prayerName ?: "Fajr"
+
+        val bundle = Bundle().apply {
+            putString("prayerName", currentPrayerName)
+        }
+        findNavController().navigate(R.id.nav_adhan_sound, bundle)    }
     private fun navigateToOffsetPicker() { findNavController().navigate(R.id.nav_pre_alarm) }
 
     private fun setupDynamicTheme(prayerName: String) {

@@ -29,4 +29,12 @@ interface PrayerDao {
     END ASC
 """)
     fun getAllSettings(): Flow<List<PrayerNotification>>
+
+    // 1️⃣ Mode 1 (Specific): Detail fragment se sirf ek namaz ka sound badalne ke liye
+    @Query("UPDATE prayer_notifications SET soundName = :sound WHERE prayerName = :prayerName")
+    suspend fun updateSoundForSpecificPrayer(prayerName: String, sound: String)
+
+    // 2️⃣ Mode 2 (Global): Settings screen se SARI namazon ka sound ek sath badalne ke liye
+    @Query("UPDATE prayer_notifications SET soundName = :sound")
+    suspend fun updateSoundForAllPrayers(sound: String)
 }

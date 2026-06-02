@@ -58,10 +58,17 @@
             tools:layout="@layout/fragment_notification_settings" />
 
     <fragment
-            android:id="@+id/nav_adhan_sound"
-            android:name="com.example.nmaazreminder.ui.fragments.setting.adhansound.AdhanSoundFragment"
-            android:label="Adhan_Sound"
-            tools:layout="@layout/fragment_adhan_sound" />
+        android:id="@+id/nav_adhan_sound"
+        android:name="com.example.nmaazreminder.ui.fragments.setting.adhansound.AdhanSoundFragment"
+        android:label="Adhan_Sound"
+        tools:layout="@layout/fragment_adhan_sound">
+
+        <argument
+            android:name="prayerName"
+            app:argType="string"
+            android:defaultValue="Global" />
+
+    </fragment>
 
     <fragment
             android:id="@+id/nav_language"
