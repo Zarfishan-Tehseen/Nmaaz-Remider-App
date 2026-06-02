@@ -3,6 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0D3E31</color>
+    <color name="cream">#F5F3EC</color>
+
     <color name="stroke_color">#E0E0E0</color>
     <color name="time_color">#00695C</color>
     <color name="light_green">#84b2a4</color>

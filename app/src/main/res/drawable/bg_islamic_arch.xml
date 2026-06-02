@@ -1,0 +1,35 @@
+<!-- res/drawable/bg_home_arch_hero.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base dark green fill -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0F3D29"/>
+            <corners
+                android:topLeftRadius="180dp"
+                android:topRightRadius="180dp"/>
+        </shape>
+    </item>
+
+    <!-- Slightly lighter inner gradient feel (optional overlay) -->
+    <item android:top="0dp" android:left="20dp" android:right="20dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#1A5C3E"/>
+            <corners
+                android:topLeftRadius="160dp"
+                android:topRightRadius="160dp"/>
+        </shape>
+    </item>
+
+    <!-- Gold border stroke -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke android:width="1.5dp" android:color="#C9A96E"/>
+            <corners
+                android:topLeftRadius="180dp"
+                android:topRightRadius="180dp"/>
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+
+</layer-list>

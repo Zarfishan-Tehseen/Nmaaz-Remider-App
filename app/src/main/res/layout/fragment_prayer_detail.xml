@@ -26,11 +26,22 @@
         app:tint="#333333"
         android:contentDescription="Go Back" />
 
+        <ImageButton
+            android:id="@+id/btnCross"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close"
+            android:background="@drawable/bg_close_circle"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/btn_back"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="16dp"
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
@@ -51,6 +62,7 @@
             android:textColor="#6E726E"
             android:textSize="13sp" />
     </LinearLayout>
+
 </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView

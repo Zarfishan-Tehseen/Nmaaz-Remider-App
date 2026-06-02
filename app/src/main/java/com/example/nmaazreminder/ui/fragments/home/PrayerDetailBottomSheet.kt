@@ -50,6 +50,17 @@ class PrayerDetailBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val isBottomSheet = arguments?.getBoolean("isBottomSheet", false) ?: false
+
+        // 🎯 SMART VISIBILITY TOGGLE: Idea implement ho gaya!
+        if (isBottomSheet) {
+            binding.btnBack.visibility = View.GONE
+            binding.btnCross.visibility = View.VISIBLE
+        } else {
+            binding.btnBack.visibility = View.VISIBLE
+            binding.btnCross.visibility = View.GONE
+        }
+
         // Parse incoming bundled structural configurations
         val prayer = arguments?.getParcelable<PrayerItem>("selectedPrayer")
 
@@ -63,16 +74,20 @@ class PrayerDetailBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.btnBack.setBounceClickListener {
+            findNavController().navigateUp()
+        }
+        binding.btnCross.setBounceClickListener {
             dismiss()
         }
 
-//        // 🌟 RESTORED: Click listeners for sound and pre-alarm offset pickers
-//        binding.btnSelectSound.setBounceClickListener {
-//            findNavController().navigate(R.id.nav_adhan_sound)
-//        }
-//        binding.btnPreAlarm.setBounceClickListener {
-//            findNavController().navigate(R.id.nav_pre_alarm)
-//        }
+        binding.btnSelectSound.setBounceClickListener {
+            findNavController().navigate(R.id.nav_adhan_sound)
+            dismiss()
+        }
+        binding.btnPreAlarm.setBounceClickListener {
+            dismiss()
+            findNavController().navigate(R.id.nav_pre_alarm)
+        }
 
         // Configure Switch Notification Listener
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->

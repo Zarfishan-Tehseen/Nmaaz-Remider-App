@@ -202,7 +202,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun handlePrayerClick(clickedPrayer: PrayerItem) {
         if (clickedPrayer.name.equals("Sunrise", ignoreCase = true)) return
 
-        val bundle = Bundle().apply { putParcelable("selectedPrayer", clickedPrayer) }
+        val bundle = Bundle().apply {
+            putParcelable("selectedPrayer", clickedPrayer)
+            putBoolean("isBottomSheet", true)
+        }
         val bottomSheet = PrayerDetailBottomSheet().apply { arguments = bundle }
         bottomSheet.show(parentFragmentManager, "PrayerDetailBottomSheet")
     }
