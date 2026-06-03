@@ -43,7 +43,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="NEXT PRAYER"
+                        android:text="CURRENT PRAYER"
                         android:textColor="@color/gold_text"
                         android:textSize="11sp"
                         android:textStyle="bold"
@@ -107,15 +107,17 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tv_qaza_timer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TIME REMAINING"
+                        android:text="QAZA TIMER"
                         android:textColor="#8AAEA5"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05" />
 
                     <LinearLayout
+                        android:id="@+id/ll_timer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

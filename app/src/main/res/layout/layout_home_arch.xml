@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -103,10 +104,10 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/tv_begins"
+                android:id="@+id/tv_qaza"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BEGINS IN"
+                android:text="QAZA IN"
                 android:textSize="13sp"
                 android:textColor="@color/stroke_color"
                 android:layout_marginTop="10dp"
@@ -116,14 +117,14 @@
 
             <LinearLayout
                 android:id="@+id/layoutArchCountdown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="192dp"
+                android:layout_height="63dp"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
                 android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/tv_begins"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/tv_qaza">
 
                 <LinearLayout
                     android:layout_width="54dp"
@@ -131,15 +132,17 @@
                     android:background="@android:color/transparent"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvArchCountdownHours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/cinzel_decorative"
                         android:text="02"
                         android:textColor="@color/white"
                         android:textSize="28sp"
-                        android:fontFamily="@font/cinzel_decorative"
                         android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -164,15 +167,17 @@
                     android:background="@android:color/transparent"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvArchCountdownMinutes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/cinzel_decorative"
                         android:text="45"
                         android:textColor="@color/white"
                         android:textSize="28sp"
-                        android:fontFamily="@font/cinzel_decorative"
                         android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -197,15 +202,17 @@
                     android:background="@android:color/transparent"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvArchCountdownSeconds"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/cinzel_decorative"
                         android:text="12"
                         android:textColor="@color/white"
-                        android:fontFamily="@font/cinzel_decorative"
                         android:textSize="28sp"
                         android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -237,7 +244,7 @@
             android:layout_marginHorizontal="20dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeColor="@color/_6aecb576"
+            app:strokeColor="@color/stroke_color_arch"
             app:strokeWidth="1dp"
             app:cardBackgroundColor="@color/opac_green"
             app:layout_constraintBottom_toBottomOf="parent"

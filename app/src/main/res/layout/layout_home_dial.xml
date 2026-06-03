@@ -72,7 +72,7 @@
                 android:id="@+id/tv_dial_in_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IN"
+                android:text="QAZA TIMER"
                 android:textColor="#A0A39F"
                 android:textSize="11sp"
                 android:textStyle="bold"

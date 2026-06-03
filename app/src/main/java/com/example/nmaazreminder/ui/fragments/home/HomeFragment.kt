@@ -114,10 +114,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         binding.homeViewFlipper.findViewById<TextView>(R.id.tv_calendar_hijri)?.text = viewModel.currentHijriDateString
 
                         currentTimesData = times
-                        updatePrayerUI(times)
+                        //updatePrayerUI(times)
 
                         // Render content on the current layout variant smoothly
                         renderVersionContent(binding.homeViewFlipper.displayedChild)
+                    }
+                }
+            }
+        }
+//  2. NEW DYNAMIC COUNTDOWN OBSERVER PIPELINE (Next Prayer Card Track)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.dynamicCountdownState.collectLatest { state ->
+                    if (state != null) {
+                        updateDynamicPrayerUI(state)
                     }
                 }
             }
@@ -210,63 +220,118 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         bottomSheet.show(parentFragmentManager, "PrayerDetailBottomSheet")
     }
 
-    private fun updatePrayerUI(times: PrayerTimes) {
-        val nextPrayer = times.nextPrayer()
-        val resolvedPrayer = if (nextPrayer == Prayer.NONE) Prayer.FAJR else nextPrayer
-        val nextPrayerTime: Date? = times.timeForPrayer(resolvedPrayer)
+    // REFACTORED: FEEDS TEXT DIRECTLY FROM PRE-CALCULATED VIEWMODEL STATE
+    private fun updateDynamicPrayerUI(state: PrayerCountdownState) {
+        // Standard View Text Setters
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_title)?.text = state.currentPrayerName
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_arabic)?.text = state.arabicPrayerName
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_time)?.text = state.formattedDisplayTime
 
-        if (nextPrayerTime == null) {
-            Log.e("HomeFragment", "Prayer time calculation returned null for: $resolvedPrayer")
-            return
+        // Arch View Text Setters
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTitle)?.text = state.currentPrayerName.uppercase(Locale.getDefault())
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerArabic)?.text = state.arabicPrayerName
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTime)?.text = state.formattedDisplayTime
+
+        // Dial View Updates
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_target_time)?.text = state.formattedDisplayTime
+
+        // Clean dynamic string selection parsing for dial highlighted selection overlays
+        val cleanLabelForDial = when {
+            state.currentPrayerName.contains("Fajr", ignoreCase = true) -> "Fajr"
+            state.currentPrayerName.contains("Dhuhr", ignoreCase = true) -> "Dhuhr"
+            state.currentPrayerName.contains("Asr", ignoreCase = true) -> "Asr"
+            state.currentPrayerName.contains("Maghrib", ignoreCase = true) -> "Maghrib"
+            state.currentPrayerName.contains("Isha", ignoreCase = true) -> "Isha"
+            else -> "Fajr"
         }
+        binding.homeViewFlipper.getChildAt(1)?.findViewById<PrayerDialView>(R.id.prayer_custom_dial_view)?.setActivePrayer(cleanLabelForDial)
 
-        val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
-
-        val (englishName, arabicName) = when (resolvedPrayer) {
-            Prayer.FAJR -> "Fajr" to "الفجر"
-            Prayer.SUNRISE -> "Sunrise" to "الشروق"
-            Prayer.DHUHR -> "Dhuhr" to "الظهر"
-            Prayer.ASR -> "Asr" to "العصر"
-            Prayer.MAGHRIB -> "Maghrib" to "المغرب"
-            Prayer.ISHA -> "Isha" to "العشاء"
-            else -> "Fajr" to "الفجر"
-        }
-
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_title)?.text = englishName
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_arabic)?.text = arabicName
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_time)?.text = timeFormatter.format(nextPrayerTime)
-
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTitle)?.text = englishName.uppercase(Locale.getDefault())
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerArabic)?.text = arabicName
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTime)?.text = timeFormatter.format(nextPrayerTime)
-
-        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_target_time)?.text = timeFormatter.format(nextPrayerTime)
-        binding.homeViewFlipper.getChildAt(1)?.findViewById<PrayerDialView>(R.id.prayer_custom_dial_view)?.setActivePrayer(englishName)
-
-        val currentTimeMs = System.currentTimeMillis()
-        val targetTimeMs = nextPrayerTime.time
-
-        if (nextPrayer == Prayer.NONE) {
+        // ⚡ TIMER CONTROL BLOCK
+        if (state.targetTimeInMillis == 0L) {
+            // 💡 GAP WINDOW TRIGGER ACTIVE: Force hard freeze zero presentation
             countDownTimer?.cancel()
-            val zeroStr = "00"
-
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_hours)?.text = zeroStr
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_minutes)?.text = zeroStr
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_seconds)?.text = zeroStr
-
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownHours)?.text = zeroStr
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownMinutes)?.text = zeroStr
-            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownSeconds)?.text = zeroStr
-
+            setTimerText("00", "00", "00")
             binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_countdown_time)?.text = "00h 00m 00s"
+
         } else {
-            var remainingMs = targetTimeMs - currentTimeMs
-            if (remainingMs < 0) {
-                remainingMs += 24 * 60 * 60 * 1000
+            // Normal counting window calculation
+            val currentTimeMs = System.currentTimeMillis()
+            val remainingMs = state.targetTimeInMillis - currentTimeMs
+
+            if (remainingMs > 0) {
+                startPrayerCountdown(remainingMs)
+            } else {
+                viewModel.refreshCurrentState()
             }
-            startPrayerCountdown(remainingMs)
         }
     }
+    private fun setTimerText(hr: String, min: String, sec: String) {
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_hours)?.text = hr
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_minutes)?.text = min
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_seconds)?.text = sec
+
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownHours)?.text = hr
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownMinutes)?.text = min
+        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownSeconds)?.text = sec
+    }
+
+//    private fun updatePrayerUI(times: PrayerTimes) {
+//        val nextPrayer = times.nextPrayer()
+//        val resolvedPrayer = if (nextPrayer == Prayer.NONE) Prayer.FAJR else nextPrayer
+//        val nextPrayerTime: Date? = times.timeForPrayer(resolvedPrayer)
+//
+//        if (nextPrayerTime == null) {
+//            Log.e("HomeFragment", "Prayer time calculation returned null for: $resolvedPrayer")
+//            return
+//        }
+//
+//        val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+//
+//        val (englishName, arabicName) = when (resolvedPrayer) {
+//            Prayer.FAJR -> "Fajr" to "الفجر"
+//            Prayer.SUNRISE -> "Sunrise" to "الشروق"
+//            Prayer.DHUHR -> "Dhuhr" to "الظهر"
+//            Prayer.ASR -> "Asr" to "العصر"
+//            Prayer.MAGHRIB -> "Maghrib" to "المغرب"
+//            Prayer.ISHA -> "Isha" to "العشاء"
+//            else -> "Fajr" to "الفجر"
+//        }
+//
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_title)?.text = englishName
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_arabic)?.text = arabicName
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_next_prayer_time)?.text = timeFormatter.format(nextPrayerTime)
+//
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTitle)?.text = englishName.uppercase(Locale.getDefault())
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerArabic)?.text = arabicName
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchNextPrayerTime)?.text = timeFormatter.format(nextPrayerTime)
+//
+//        binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_target_time)?.text = timeFormatter.format(nextPrayerTime)
+//        binding.homeViewFlipper.getChildAt(1)?.findViewById<PrayerDialView>(R.id.prayer_custom_dial_view)?.setActivePrayer(englishName)
+//
+//        val currentTimeMs = System.currentTimeMillis()
+//        val targetTimeMs = nextPrayerTime.time
+//
+//        if (nextPrayer == Prayer.NONE) {
+//            countDownTimer?.cancel()
+//            val zeroStr = "00"
+//
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_hours)?.text = zeroStr
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_minutes)?.text = zeroStr
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_seconds)?.text = zeroStr
+//
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownHours)?.text = zeroStr
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownMinutes)?.text = zeroStr
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownSeconds)?.text = zeroStr
+//
+//            binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_countdown_time)?.text = "00h 00m 00s"
+//        } else {
+//            var remainingMs = targetTimeMs - currentTimeMs
+//            if (remainingMs < 0) {
+//                remainingMs += 24 * 60 * 60 * 1000
+//            }
+//            startPrayerCountdown(remainingMs)
+//        }
+//    }
 
     private fun getFormattedPrayerList(times: PrayerTimes): List<PrayerItem> {
         val timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
@@ -292,22 +357,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val minStr = String.format(Locale.getDefault(), "%02d", minutes)
                 val secStr = String.format(Locale.getDefault(), "%02d", seconds)
 
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_hours)?.text = hrStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_minutes)?.text = minStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_seconds)?.text = secStr
-
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownHours)?.text = hrStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownMinutes)?.text = minStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tvArchCountdownSeconds)?.text = secStr
-
+                setTimerText(hrStr, minStr, secStr)
                 binding.homeViewFlipper.findViewById<TextView>(R.id.tv_dial_countdown_time)?.text = "${hrStr}h ${minStr}m ${secStr}s"
             }
 
             override fun onFinish() {
-                val zeroStr = "00"
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_hours)?.text = zeroStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_minutes)?.text = zeroStr
-                binding.homeViewFlipper.findViewById<TextView>(R.id.tv_countdown_seconds)?.text = zeroStr
+                setTimerText("00", "00", "00")
+                // REFRESH TRIGGER: Notify system to calculate next boundary interval status!
+                viewModel.refreshCurrentState()
             }
         }.start()
     }

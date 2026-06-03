@@ -158,7 +158,7 @@ class PrayerDialView @JvmOverloads constructor(
         textPaint.textSize = 28f
         textPaint.letterSpacing = 0.08f
         textPaint.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-        canvas.drawText("NEXT", centerX, centerY - 65f, textPaint)
+        canvas.drawText("CURRENT", centerX, centerY - 65f, textPaint)
 
         // Target Prayer Title English
         textPaint.color = Color.parseColor("#1E3A34")
