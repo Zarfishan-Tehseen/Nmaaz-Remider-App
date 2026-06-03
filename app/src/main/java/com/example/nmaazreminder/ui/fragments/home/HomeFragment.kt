@@ -102,7 +102,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         btnNext?.setOnClickListener { viewModel.shiftDateByDays(1) }
         btnToday?.setOnClickListener { viewModel.resetToToday() }
 
-        // 🌟 1. PIPELINE PIPES PIPING: PRAYER DATA COLLECTION
+        // 1. PIPELINE PIPES PIPING: PRAYER DATA COLLECTION
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.prayerState.collect { dataPair ->
@@ -123,7 +123,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        // 🌟 2. PIPELINE PIPES PIPING: GLOBAL SETTINGS DISPATCHER (Layout Synchronizer)
+        // 2. PIPELINE PIPES PIPING: GLOBAL SETTINGS DISPATCHER (Layout Synchronizer)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.globalSettings.collectLatest { settings ->
@@ -152,7 +152,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             0 -> {
                 val rvList = currentView.findViewById<RecyclerView>(R.id.rv_prayer_list)
                 if (rvList != null) {
-                    // 🌟 REFACTOR: If adapter is null, create it. Otherwise, reuse it and submit list!
+                    //  REFACTOR: If adapter is null, create it. Otherwise, reuse it and submit list!
                     if (listAdapter == null) {
                         listAdapter = PrayerAdapter(0) { item -> handlePrayerClick(item) }
                         rvList.layoutManager = LinearLayoutManager(requireContext())
@@ -187,7 +187,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 if (rvArch != null) {
                     if (archAdapter == null) {
-                        archAdapter = PrayerAdapter(1) { item -> handlePrayerClick(item) }
+                        archAdapter = PrayerAdapter(2) { item -> handlePrayerClick(item) }
                         rvArch.layoutManager = object : androidx.recyclerview.widget.GridLayoutManager(requireContext(), 5) {
                             override fun canScrollHorizontally(): Boolean = false
                         }
@@ -338,6 +338,33 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.btnToggleArch.setTextColor(if (index == 2) activeColor else inactiveColor)
         binding.btnToggleArch.setBackgroundResource(if (index == 2) R.drawable.bg_segmented_active else 0)
+
+        // 🎯 TARGET STRATEGY: Handle transparent vs cream conditional states
+        if (index == 2) {
+            // 🟢 Arch mode: Transparent Header + White Texts
+            binding.layoutStaticHeader.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            binding.tvCurrentLocation.setTextColor(android.graphics.Color.WHITE)
+
+            // Toggle icons to white tint smoothly
+            for (i in 0 until binding.layoutLocationSelector.childCount) {
+                val child = binding.layoutLocationSelector.getChildAt(i)
+                if (child is android.widget.ImageView) {
+                    child.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+                }
+            }
+        } else {
+            // ⚪ List & Dial mode: Solid Cream Header + Dark Grey Texts
+            binding.layoutStaticHeader.setBackgroundColor(android.graphics.Color.parseColor("#F7F5F0"))
+            binding.tvCurrentLocation.setTextColor(android.graphics.Color.parseColor("#333333"))
+
+            val defaultGrey = android.graphics.Color.parseColor("#6E726E")
+            for (i in 0 until binding.layoutLocationSelector.childCount) {
+                val child = binding.layoutLocationSelector.getChildAt(i)
+                if (child is android.widget.ImageView) {
+                    child.imageTintList = android.content.res.ColorStateList.valueOf(defaultGrey)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

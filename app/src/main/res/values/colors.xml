@@ -3,26 +3,20 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0D3E31</color>
-    <color name="cream">#F5F3EC</color>
+    <color name="opac_green">#882D4D38</color>
+    <color name="cream">#F7F5F0</color>
+    <color name="gold_text">#E0A96D</color>
 
     <color name="stroke_color">#E0E0E0</color>
-    <color name="time_color">#00695C</color>
     <color name="light_green">#84b2a4</color>
-    <color name="subtle_green">#cbeacd</color>
-    <color name="pheeka_green">#F1FBF5</color>
-
 
     <color name="bg_main_dark">#0E3B2E</color>
     <color name="card_bg_primary">#1B4D3E</color>
     <color name="card_bg_secondary">#174639</color>
 
-    <color name="text_white">#FFFFFF</color>
-    <color name="text_accent_mint">#A2E8DD</color>
-    <color name="text_muted_gray">#B0C4DE</color>
-
     <color name="state_success">#2ECC71</color>
     <color name="state_pending">#E74C3C</color>
     <color name="state_inactive">#4A6B5D</color>
-    <color name="_6aecb576">#40ECB576</color>
+    <color name="stroke_color_arch">#40ECB576</color> //also bg_star_icon
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.nmaazreminder.ui.fragments.home
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,7 +12,7 @@ import com.example.nmaazreminder.databinding.ItemPrayerColumnBinding
 import com.example.nmaazreminder.utils.setBounceClickListener
 
 class PrayerAdapter(
-    private val viewTypeMode: Int, // 🌟 0 = Standard Row, 1 = Column Grid Block
+    private val viewTypeMode: Int, // 🌟 0 = Row, 1 = Dial Grid, 2 = Arch Grid
     private val onNotificationClick: (PrayerItem) -> Unit
 ) : ListAdapter<PrayerItem, RecyclerView.ViewHolder>(DiffCallback) {
 
@@ -25,8 +26,9 @@ class PrayerAdapter(
             val binding = ItemPrayerBinding.inflate(inflater, parent, false)
             RowViewHolder(binding)
         } else {
+            // 💡 Dial (1) aur Arch (2) dono isi single column XML ko inflate karenge
             val binding = ItemPrayerColumnBinding.inflate(inflater, parent, false)
-            ColumnViewHolder(binding)
+            ColumnViewHolder(binding, viewType)
         }
     }
 
@@ -72,24 +74,53 @@ class PrayerAdapter(
     }
 
     // 🔥 2. VIEW HOLDER FOR THE DIAL & ARCH LAYOUTS (Column Style)
-    class ColumnViewHolder(private val binding: ItemPrayerColumnBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ColumnViewHolder(
+        private val binding: ItemPrayerColumnBinding,
+        private val currentMode: Int
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: PrayerItem, onNotificationClick: (PrayerItem) -> Unit) {
             binding.tvPrayerNameEnglish.text = item.name
             binding.tvPrayerTime.text = item.time
 
-            if (item.name.lowercase().trim() == "sunrise") {
-                binding.rowContainerColumn.setOnTouchListener(null)
-                binding.rowContainerColumn.setOnClickListener(null)
-                binding.rowContainerColumn.isClickable = false
-                binding.rowContainerColumn.background = null
+            // 🎨 DYNAMIC THEMING LOGIC BASED ON MODE
+            if (currentMode == 2) {
+                // 🟢 ARCH LAYOUT CONFIGURATION (White Theme)
+                binding.tvPrayerNameEnglish.setTextColor(Color.WHITE)
+                binding.tvPrayerTime.setTextColor(Color.parseColor("#B3FFFFFF")) // 70% Alpha White
+
+                if (item.name.lowercase().trim() == "sunrise") {
+                    binding.rowContainerColumn.setOnTouchListener(null)
+                    binding.rowContainerColumn.setOnClickListener(null)
+                    binding.rowContainerColumn.isClickable = false
+                    binding.rowContainerColumn.background = null
+                } else {
+                    binding.rowContainerColumn.isClickable = true
+                    binding.rowContainerColumn.isFocusable = true
+
+                    // Reference image jaisa custom dynamic green cell background color bitha diya
+                    binding.rowContainerColumn.setBackgroundResource(R.drawable.bg_arch_item_selector)
+                    binding.rowContainerColumn.setBounceClickListener {
+                        onNotificationClick(item)
+                    }
+                }
             } else {
-                binding.rowContainerColumn.isClickable = true
-                binding.rowContainerColumn.isFocusable = true
-                binding.rowContainerColumn.setBackgroundResource(R.drawable.bg_row_ripple)
-                binding.rowContainerColumn.setBounceClickListener {
-                    onNotificationClick(item)
+                // ⚪ DIAL LAYOUT CONFIGURATION (Original Cream Theme)
+                binding.tvPrayerNameEnglish.setTextColor(Color.parseColor("#333333"))
+                binding.tvPrayerTime.setTextColor(Color.parseColor("#6E726E"))
+
+                if (item.name.lowercase().trim() == "sunrise") {
+                    binding.rowContainerColumn.setOnTouchListener(null)
+                    binding.rowContainerColumn.setOnClickListener(null)
+                    binding.rowContainerColumn.isClickable = false
+                    binding.rowContainerColumn.background = null
+                } else {
+                    binding.rowContainerColumn.isClickable = true
+                    binding.rowContainerColumn.isFocusable = true
+                    binding.rowContainerColumn.setBackgroundResource(R.drawable.bg_row_ripple)
+                    binding.rowContainerColumn.setBounceClickListener {
+                        onNotificationClick(item)
+                    }
                 }
             }
         }

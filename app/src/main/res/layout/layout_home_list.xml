@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:paddingTop="64dp"
     android:clipToPadding="false"
     android:paddingBottom="80dp">
 
@@ -43,7 +44,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="NEXT PRAYER"
-                        android:textColor="#E0A96D"
+                        android:textColor="@color/gold_text"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05" />
@@ -68,7 +69,7 @@
                     android:layout_below="@id/tv_next_prayer_title"
                     android:fontFamily="@font/amiri"
                     android:text="العصر"
-                    android:textColor="#E0A96D"
+                    android:textColor="@color/gold_text"
                     android:textSize="22sp" />
 
                 <TextView
